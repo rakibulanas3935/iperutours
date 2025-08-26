@@ -1,5 +1,5 @@
 export default function Home() {
   return (
-     <h1>Welcome to Peru</h1>
+     <div className="text-7xl text-center">Welcome to peru</div>
   );
 }
