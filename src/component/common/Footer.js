@@ -1,117 +1,155 @@
 "use client";
-import React from "react";
+
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
-import { FaInstagram, FaYoutube, FaLinkedin, FaGithub } from "react-icons/fa";
+import {
+  FaWhatsapp,
+  FaEnvelope,
+  FaFacebookF,
+  FaInstagram,
+  FaPinterestP,
+} from "react-icons/fa";
+import { FaTiktok } from "react-icons/fa6";
+import { FaTripadvisor } from "react-icons/fa";
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/events', label: 'Events' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/contact', label: 'Contact' },
-];
-
-const Footer = () => {
+export default function Footer() {
   return (
-    <motion.footer
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-      className="relative overflow-hidden bg-black/90 text-gray-300 px-6 pt-20 pb-10 border-t border-white/10"
-    >
-      {/* Radial animated background */}
-      <motion.div
-        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
-        animate={{
-          background: [
-            'radial-gradient(circle at 10% 20%, #4F46E5, transparent)',
-            'radial-gradient(circle at 90% 80%, #9333EA, transparent)',
-            'radial-gradient(circle at 10% 20%, #4F46E5, transparent)',
-          ],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 text-sm">
-        {/* Column 1: Brand */}
+    <footer className="bg-gray-100">
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+        {/* Column 1: Logo & Address */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text">
-            Deep Sky Society
-          </h2>
-          <p className="text-gray-400 leading-relaxed">
-            Exploring space. Empowering minds. We are the next generation of cosmic thinkers.
+          <h3 className="font-bold text-lg mb-4">Turismo iPeru</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <Image
+              src="/logo.png" // replace with your logo
+              alt="Turismo iPeru"
+              width={50}
+              height={50}
+            />
+            <p className="text-sm font-semibold">Explore Peru With Us</p>
+          </div>
+          <p className="flex items-start gap-2 text-sm mb-2">
+            🏠 CUSCO: C. Comercial Ruiseñores, 2nd floor, Of. s/n (Main Square)
+          </p>
+          <p className="flex items-start gap-2 text-sm mb-2">
+            🏠 LIMA: Gonzales Vigil St. #116, Los Olivos
+          </p>
+          <p className="flex items-start gap-2 text-sm">
+            🏠 AREQUIPA: Santa Marta St. #101
           </p>
         </motion.div>
 
-        {/* Column 2: Quick Links */}
+        {/* Column 2: Contact */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ duration: 0.6 }}
         >
-          <h3 className="text-white font-semibold mb-4">Quick Links</h3>
-          <ul className="space-y-2">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="hover:text-white hover:underline transition"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+          <h3 className="font-bold text-lg mb-4">Contact</h3>
+          <p className="text-sm font-semibold mb-2">
+            Trade name: Turismo iPeru E.I.R.L. <br />
+            RUC: <span className="font-bold">20609503638</span>
+          </p>
+          <p className="flex items-center gap-2 text-sm mb-2">
+            <FaWhatsapp className="text-green-500" /> (+51) 972 386 856
+          </p>
+          <p className="flex items-center gap-2 text-sm mb-2">
+            <FaWhatsapp className="text-green-500" /> (+51) 966 389 141
+          </p>
+          <p className="flex items-center gap-2 text-sm mb-2">
+            <FaEnvelope /> info@iperutours.com
+          </p>
+          <p className="flex items-center gap-2 text-sm mb-2">
+            <FaEnvelope /> reserva@iperutours.com
+          </p>
+          <p className="flex items-center gap-2 text-sm">
+            <FaEnvelope /> booking@iperutours.com
+          </p>
+        </motion.div>
+
+        {/* Column 3: Support */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <h3 className="font-bold text-lg mb-4">Support</h3>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <Link href="#">About us</Link>
+            </li>
+            <li>
+              <Link href="#">Terms and Conditions</Link>
+            </li>
+            <li>
+              <Link href="#">Privacy policy</Link>
+            </li>
+            <li>
+              <Link href="#">Refund policy</Link>
+            </li>
           </ul>
-        </motion.div>
-
-        {/* Column 3: Contact Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-        >
-          <h3 className="text-white font-semibold mb-4">Contact</h3>
-          <p className="text-gray-400 mb-2">Email: hello@Deep Sky Society.space</p>
-          <p className="text-gray-400">Phone: +880-1234-567890</p>
-        </motion.div>
-
-        {/* Column 4: Social Media */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-        >
-          <h3 className="text-white font-semibold mb-4">Follow Us</h3>
-          <div className="flex space-x-4 text-xl">
-            <a href="https://instagram.com" target="_blank" className="hover:text-pink-500 transition"><FaInstagram /></a>
-            <a href="https://youtube.com" target="_blank" className="hover:text-red-500 transition"><FaYoutube /></a>
-            <a href="https://linkedin.com" target="_blank" className="hover:text-blue-400 transition"><FaLinkedin /></a>
-            <a href="https://github.com" target="_blank" className="hover:text-gray-100 transition"><FaGithub /></a>
+          <h3 className="font-bold text-lg mt-6 mb-3">Accepted payments</h3>
+          <div className="flex gap-3">
+            <Image src="/visa.png" alt="Visa" width={50} height={30} />
+            <Image src="/mastercard.png" alt="MasterCard" width={50} height={30} />
+            <Image src="/diners.png" alt="Diners Club" width={50} height={30} />
+            <Image src="/amex.png" alt="AmEx" width={50} height={30} />
           </div>
+        </motion.div>
+
+        {/* Column 4: Cities */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h3 className="font-bold text-lg mb-4">Cities</h3>
+          <ul className="space-y-2 text-sm">
+            <li>➕ Cusco, Peru</li>
+            <li>➕ Huaraz, Peru</li>
+            <li>➕ Arequipa, Peru</li>
+            <li>➕ Puno, Peru</li>
+            <li>➕ Lima, Peru</li>
+            <li>
+              <Link href="#">➕ See More</Link>
+            </li>
+          </ul>
         </motion.div>
       </div>
 
-      {/* Bottom Bar */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.6 }}
-        className="relative z-10 mt-12 text-center text-gray-500 text-xs"
-      >
-        © {new Date().getFullYear()} Deep Sky Society. All rights reserved.
-      </motion.div>
-    </motion.footer>
-  );
-};
+      {/* Social Media */}
+      <div className="flex justify-center gap-4 mb-6">
+        <a href="#" className="p-2 bg-white rounded-full shadow">
+          <FaFacebookF />
+        </a>
+        <a href="#" className="p-2 bg-white rounded-full shadow">
+          <FaInstagram />
+        </a>
+        <a href="#" className="p-2 bg-white rounded-full shadow">
+          <FaTiktok />
+        </a>
+        <a href="#" className="p-2 bg-white rounded-full shadow">
+          <FaTripadvisor />
+        </a>
+        <a href="#" className="p-2 bg-white rounded-full shadow">
+          <FaPinterestP />
+        </a>
+      </div>
 
-export default Footer;
+      {/* Bottom Bar */}
+      <div className="bg-green-600 text-white text-sm py-3 px-6 flex flex-col md:flex-row justify-between items-center">
+        <p>All rights reserved© – 2025 · Turismo iPeru</p>
+        <p>
+          Designed and developed with <span className="text-red-400">❤</span> by{" "}
+          <span className="text-red-400">RHG</span>
+        </p>
+      </div>
+    </footer>
+  );
+}

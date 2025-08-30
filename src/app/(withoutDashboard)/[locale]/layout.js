@@ -10,6 +10,7 @@ import { CategoryProvider } from '@/context/categoryContext';
 import { SubCategoryProvider } from '@/context/subCategoryContext';
 import { NewPlaceProvider } from '@/context/newPlaceContext';
 import { TourProvider } from '@/context/tourContext';
+import Footer from '@/component/common/Footer';
 
 
 
@@ -41,6 +42,7 @@ export default async function LocaleLayout({
               <SubCategoryProvider>
                 <Header />
                 {children}
+                <Footer/>
               </SubCategoryProvider>
             </CategoryProvider>
             </NewPlaceProvider>
