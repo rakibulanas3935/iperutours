@@ -1,5 +1,18 @@
 {
   "HomePage": {
     "title": "Guten Aband ! "
-  }
+  },
+  "menu": [
+    { "placeName": "Cusco nnm", "link": "/cusco", "banner": "/banners/cusco.jpg" },
+    { "placeName": "Lima", "link": "/lima", "banner": "/banners/lima.jpg" },
+    { "placeName": "Huaraz", "link": "/huaraz", "banner": "/banners/huaraz.jpg" },
+    { "placeName": "Puno", "link": "/puno", "banner": "/banners/puno.jpg" },
+    { "placeName": "Arequipa", "link": "/arequipa", "banner": "/banners/arequipa.jpg" },
+    { "placeName": "Iquitos", "link": "/iquitos", "banner": "/banners/iquitos.jpg" },
+    { "placeName": "Puerto Maldonado", "link": "/puerto-maldonado", "banner": "/banners/puerto.jpg" },
+    { "placeName": "Chachapoyas", "link": "/chachapoyas", "banner": "/banners/chachapoyas.jpg" },
+    { "placeName": "Ayacucho", "link": "/ayacucho", "banner": "/banners/ayacucho.jpg" },
+    { "placeName": "Tarapoto", "link": "/tarapoto", "banner": "/banners/tarapoto.jpg" },
+    { "placeName": "Ica", "link": "/ica", "banner": "/banners/ica.jpg" }
+  ]
 }
