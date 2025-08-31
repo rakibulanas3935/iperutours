@@ -11,6 +11,7 @@ import { SubCategoryProvider } from '@/context/subCategoryContext';
 import { NewPlaceProvider } from '@/context/newPlaceContext';
 import { TourProvider } from '@/context/tourContext';
 import Footer from '@/component/common/Footer';
+import { ActiveMenuProvider } from '@/context/activeMenuContext';
 
 
 
@@ -34,6 +35,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body>
+        <ActiveMenuProvider>
         <NextIntlClientProvider>
           <UserProvider>
             <TourProvider>
@@ -49,6 +51,7 @@ export default async function LocaleLayout({
             </TourProvider>
           </UserProvider>
         </NextIntlClientProvider>
+        </ActiveMenuProvider>
       </body>
     </html>
   );

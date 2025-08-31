@@ -10,7 +10,7 @@ export default function TripTabs() {
   const tabs = ["Details", "Inclusion", "Description", "What to bring", "Cancellation", "Reviews"];
 
   return (
-    <div className="mt-10 w-full  p-4 lg:p-10">
+    <div className=" w-full max-w-7xl mx-auto p-4 lg:p-10">
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b pb-2">
         {tabs.map((tab) => (

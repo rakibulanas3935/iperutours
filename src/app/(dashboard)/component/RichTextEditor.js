@@ -27,7 +27,7 @@ export default function RichTextEditor({ value, onChange }) {
     editorProps: {
       attributes: {
         class:
-          'prose prose-invert focus:outline-none min-h-[150px] p-4 text-white',
+          'prose prose-invert focus:outline-none min-h-[150px] p-4 text-text-title',
       },
     },
     autofocus: false,
@@ -50,8 +50,8 @@ export default function RichTextEditor({ value, onChange }) {
       onClick={command}
       className={`px-2 py-1 text-sm rounded transition ${
         isActive
-          ? 'bg-purple-500 text-black'
-          : 'hover:bg-white/10 text-white/80'
+          ? ' bg-primary text-black'
+          : 'hover:bg-white/10 text-text-title'
       }`}
       type="button"
     >
@@ -60,9 +60,11 @@ export default function RichTextEditor({ value, onChange }) {
   );
 
   return (
-    <div className="backdrop-blur-md border border-white/20 bg-black rounded-xl shadow-xl">
+    <div className="backdrop-blur-md  border border-neutral-line 
+                                        text-text-body bg-white
+                                        placeholder:text-gray-400 rounded-xl shadow-xl">
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-2 border-b text-black border-white/10 p-3 rounded-t-xl bg-white/5">
+      <div className="flex flex-wrap gap-2 border-b text-black border-white/10 p-3 rounded-t-xl bg-primary">
         <ToolbarButton
           icon="B"
           isActive={editor.isActive('bold')}
@@ -124,7 +126,7 @@ export default function RichTextEditor({ value, onChange }) {
       </div>
 
       {/* Editor */}
-      <EditorContent editor={editor} className="px-4 py-4" />
+      <EditorContent editor={editor} className="px-4 py-4 text-text-body" />
     </div>
   );
 }

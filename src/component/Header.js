@@ -13,22 +13,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-
+import { DE, GB } from "country-flag-icons/react/3x2";
 import en from "@/messages/en.json";
 import de from "@/messages/de.json";
+import { FaWhatsapp } from "react-icons/fa";
+import { useNewPlaceContext } from "@/context/newPlaceContext";
+import { useActiveMenuContext } from "@/context/activeMenuContext";
+import { data } from "autoprefixer";
 
 export default function Header({ locale = "en" }) {
   const [showTop, setShowTop] = useState(true);
   const [langOpen, setLangOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const {newPlace}=useNewPlaceContext()
+    const { activeMenu, activeMenuLoading,setactiveMenu,getAllactiveMenu } = useActiveMenuContext()
   const pathname = usePathname();
   const messages = locale === "de" ? de : en;
-  const places = messages.menu;
+ 
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
+      if (window.scrollY > 20) {
         setShowTop(false);
       } else {
         setShowTop(true);
@@ -48,7 +53,7 @@ export default function Header({ locale = "en" }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
-            className="bg-brand-primary text-white text-xs sm:text-sm py-2 flex justify-center items-center gap-2"
+            className="bg-brand-primary text-white text-xs sm:text-sm py-3 flex justify-center items-center gap-2"
           >
             <span>📢</span>
             <span className="text-center">
@@ -63,7 +68,7 @@ export default function Header({ locale = "en" }) {
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image
-            src="/logo.png"
+            src="/image.png"
             alt="Turismo Logo"
             width={150}
             height={50}
@@ -85,8 +90,12 @@ export default function Header({ locale = "en" }) {
           </Link>
 
           {/* WhatsApp */}
-          <Link href="https://wa.me/123456789" target="_blank">
-            <Image src="/whatsapp.svg" alt="WhatsApp" width={28} height={28} />
+          <Link
+            href="https://wa.me/123456789"
+            target="_blank"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-green-500 hover:bg-green-600 transition"
+          >
+            <FaWhatsapp className="text-white w-6 h-6" />
           </Link>
 
           {/* Language Dropdown */}
@@ -95,12 +104,9 @@ export default function Header({ locale = "en" }) {
               className="flex items-center gap-1"
               onClick={() => setLangOpen(!langOpen)}
             >
-              <Image
-                src={locale === "de" ? "/de-flag.svg" : "/uk-flag.svg"}
-                alt="Language"
-                width={28}
-                height={18}
-              />
+              <div className="w-7 h-5 overflow-hidden rounded-sm shadow">
+                {locale === "de" ? <DE title="German" /> : <GB title="English" />}
+              </div>
               <ChevronDown size={16} />
             </button>
             <AnimatePresence>
@@ -119,7 +125,7 @@ export default function Header({ locale = "en" }) {
                     }}
                     className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 w-full"
                   >
-                    <Image src="/uk-flag.svg" alt="EN" width={20} height={14} />
+                    <GB title="English" className="w-7 h-7" />
                     English
                   </button>
                   <button
@@ -129,7 +135,7 @@ export default function Header({ locale = "en" }) {
                     }}
                     className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 w-full"
                   >
-                    <Image src="/de-flag.svg" alt="DE" width={20} height={14} />
+                    <DE title="German" className="w-7 h-7" />
                     Deutsch
                   </button>
                 </motion.div>
@@ -175,18 +181,22 @@ export default function Header({ locale = "en" }) {
 
       {/* Desktop Navigation */}
       <nav className="hidden md:flex justify-center gap-6 py-3 bg-gray-50 font-semibold">
-        {places.map((place) => (
-          <Link
-            key={place.placeName}
-            href={place.link}
-            className={`transition-colors ${
-              pathname === place.link
-                ? "text-brand-secondary"
-                : "text-text-title hover:text-brand-secondary"
-            }`}
-          >
-            {place.placeName}
-          </Link>
+        {newPlace?.data?.map((place) => (
+         <button
+          key={place?.placeName}
+          onClick={() => {
+            getAllactiveMenu(`http://localhost:3000/api/v1/places/${place?._id}`,(data)=>{
+              setactiveMenu(data?.data)
+            })
+          }}
+          className={`transition-colors cursor-pointer ${
+            activeMenu?._id === place?._id
+              ? "text-brand-secondary"
+              : "text-text-title hover:text-brand-secondary"
+          }`}
+        >
+          {place?.placeName}
+        </button>
         ))}
       </nav>
 
@@ -200,18 +210,18 @@ export default function Header({ locale = "en" }) {
             transition={{ duration: 0.3 }}
             className="md:hidden bg-white shadow-lg px-4 py-4 flex flex-col gap-3 font-semibold"
           >
-            {places.map((place) => (
+            {newPlace?.data?.map((place) => (
               <Link
-                key={place.placeName}
-                href={place.link}
+                key={place?.placeName}
+                href={place?.link}
                 className={`transition-colors ${
-                  pathname === place.link
+                  pathname === place?.link
                     ? "text-brand-secondary"
                     : "text-text-title hover:text-brand-secondary"
                 }`}
                 onClick={() => setMenuOpen(false)}
               >
-                {place.placeName}
+                {place?.placeName}
               </Link>
             ))}
 

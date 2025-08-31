@@ -1,6 +1,8 @@
 "use client";
+import { useTourContext } from "@/context/tourContext";
 import { motion } from "framer-motion";
 import { Clock, MapPin } from "lucide-react";
+import Link from "next/link";
 
 const activities = [
   {
@@ -53,68 +55,76 @@ const activities = [
 ];
 
 export default function TopBookedActivities() {
+  const {tours}=useTourContext()
+  console.log("tours",tours)
   return (
-    <section className="bg-[#f5f5f5] py-12 px-4 sm:px-8 lg:px-16">
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold text-[#0b61b3]">Top Booked Activities</h2>
-        <div className="w-24 h-[2px] bg-[#e94f1d] mx-auto mt-2"></div>
-      </div>
+		<section className="bg-[#f5f5f5] py-12 px-4 sm:px-8 lg:px-16">
+			<div className="text-center mb-10">
+				<h2 className="text-3xl font-bold text-[#0b61b3]">
+					Top Booked Activities
+				</h2>
+				<div className="w-24 h-[2px] bg-[#e94f1d] mx-auto mt-2"></div>
+			</div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {activities.map((activity, i) => (
-          <motion.div
-            key={activity.id}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: i * 0.2 }}
-            className="bg-white rounded-xl shadow hover:shadow-lg overflow-hidden relative"
-          >
-            {/* Bestseller tag */}
-            <div className="absolute top-2 left-2 bg-yellow-400 text-xs font-semibold px-2 py-1 rounded">
-              Bestseller
-            </div>
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{tours?.data?.map((tour, i) => (
+					<Link href={`/tour/${tour?._id}`}>
+						<motion.div
+							key={tour?._id}
+							initial={{ opacity: 0, y: 50 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6, delay: i * 0.2 }}
+							className="bg-white rounded-xl shadow hover:shadow-lg cursor-pointer overflow-hidden relative"
+						>
+							{/* Bestseller tag */}
+							<div className="absolute top-2 left-2 bg-yellow-400 text-xs font-semibold px-2 py-1 rounded">
+								Bestseller
+							</div>
 
-            {/* Image */}
-            <img src={activity.image} alt={activity.title} className="w-full h-40 object-cover" />
+							{/* Image */}
+							<img
+								src={tour?.images[0]}
+								alt={tour?.title}
+								className="w-full h-40 object-cover"
+							/>
 
-            {/* Badge */}
-            {activity.badge && (
-              <div className="absolute top-36 right-2 bg-pink-600 text-white text-xs px-2 py-1 rounded">
-                {activity.badge}
-              </div>
-            )}
+							{/* Badge */}
 
-            {/* Content */}
-            <div className="p-4">
-              <p className="text-sm text-gray-500 flex items-center gap-1">
-                <MapPin className="w-4 h-4 text-red-500" /> {activity.location}
-              </p>
-              <h3 className="font-bold text-lg mt-1">{activity.title}</h3>
+							<div className="absolute top-36 right-2 bg-pink-600 text-white text-xs px-2 py-1 rounded">
+								Breakfast + Lunch
+							</div>
 
-              {/* Rating */}
-              <div className="flex items-center gap-1 mt-2">
-                <span className="text-yellow-400">★★★★★</span>
-                <span className="text-sm text-gray-600">
-                  {activity.rating} ({activity.reviews})
-                </span>
-              </div>
+							{/* Content */}
+							<div className="p-4">
+								<p className="text-sm text-gray-500 flex items-center gap-1">
+									<MapPin className="w-4 h-4 text-red-500" />{" "}
+									{tour?.place?.placeName}
+								</p>
+								<h3 className="font-bold text-lg mt-1">{tour?.title}</h3>
 
-              {/* Recent bookings */}
-              <p className="text-sm text-orange-600 mt-1">{activity.recent}</p>
+								{/* Rating */}
+								<div className="flex items-center gap-1 mt-2">
+									<span className="text-yellow-400">★★★★★</span>
+									<span className="text-sm text-gray-600">5 (9)</span>
+								</div>
 
-              {/* Duration */}
-              <div className="flex items-center text-sm text-gray-600 mt-2">
-                <Clock className="w-4 h-4 mr-1" /> {activity.duration}
-              </div>
+								{/* Recent bookings */}
+								<p className="text-sm text-orange-600 mt-1">2 recent booking</p>
 
-              {/* Price */}
-              <div className="mt-3 font-bold text-right text-gray-800">
-                From: <span className="text-black">{activity.price}</span>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
+								{/* Duration */}
+								<div className="flex items-center text-sm text-gray-600 mt-2">
+									<Clock className="w-4 h-4 mr-1" /> {tour?.details?.duration}
+								</div>
+
+								{/* Price */}
+								<div className="mt-3 font-bold text-right text-gray-800">
+									From: <span className="text-black">12</span>
+								</div>
+							</div>
+						</motion.div>
+					</Link>
+				))}
+			</div>
+		</section>
+	);
 }

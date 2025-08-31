@@ -15,7 +15,7 @@ import { FaTripadvisor } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100">
+    <footer className="bg-neutral-background">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Column 1: Logo & Address */}
@@ -27,10 +27,10 @@ export default function Footer() {
           <h3 className="font-bold text-lg mb-4">Turismo iPeru</h3>
           <div className="flex items-center gap-2 mb-3">
             <Image
-              src="/logo.png" // replace with your logo
+              src="/image.png" // replace with your logo
               alt="Turismo iPeru"
               width={50}
-              height={50}
+              height={80}
             />
             <p className="text-sm font-semibold">Explore Peru With Us</p>
           </div>
@@ -143,11 +143,11 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-green-600 text-white text-sm py-3 px-6 flex flex-col md:flex-row justify-between items-center">
+      <div className="bg-brand-primary text-white text-sm py-3 px-6 flex flex-col md:flex-row justify-between items-center">
         <p>All rights reserved© – 2025 · Turismo iPeru</p>
         <p>
-          Designed and developed with <span className="text-red-400">❤</span> by{" "}
-          <span className="text-red-400">RHG</span>
+          Designed and developed with <span className="text-brand-secondary">❤</span> by{" "}
+          <span className="text-brand-secondary">RHG</span>
         </p>
       </div>
     </footer>

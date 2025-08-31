@@ -172,7 +172,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="w-full text-black flex justify-between items-center px-4 py-2 border rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full text-black flex justify-between items-center px-4 py-2 border-0 rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-brand-primary focus:outline-none"
             >
                 {selected ? selected?.placeName || selected?.name : `-- Select ${label} --`}
                 <ChevronDown className="ml-2 h-4 w-4" />
@@ -188,7 +188,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                             }}
                             className="px-4 py-2 text-black hover:bg-blue-100 cursor-pointer"
                         >
-                            {item?.name}
+                            {item?.name || item?.placeName}
                         </li>
                     ))}
                 </ul>
@@ -205,7 +205,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                     exit={{ opacity: 0 }}
                 >
                     <motion.div
-                        className="relative w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 md:p-8 text-gray-800 overflow-auto max-h-[90vh]"
+                        className="relative w-full max-w-4xl bg-neutral-background rounded-2xl shadow-xl p-6 md:p-8 text-gray-800 overflow-auto max-h-[90vh]"
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.95, opacity: 0 }}
@@ -214,7 +214,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 text-gray-600 hover:text-red-500 transition"
+                            className="absolute top-4 cursor-pointer right-4 text-gray-600 hover:text-brand-secondary transition"
                         >
                             <X size={24} />
                         </button>
@@ -223,40 +223,82 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                         <h2 className="text-2xl font-bold mb-6 text-center">➕ Add New Tour</h2>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Title */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Enter tour title"
-                                    className="w-full px-4 py-2 border rounded-lg text-black shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                />
-                            </div>
 
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-text-title mb-2">
+                            Title
+                            </label>
+                            <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Enter tour title"
+                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+                                        border border-neutral-line 
+                                        text-text-body bg-white
+                                        placeholder:text-gray-400
+                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                        transition duration-200"
+                            />
+                        </div>
                             {/* Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {Object.keys(details).map((key) => (
                                     <div key={key}>
-                                        <label className="block text-sm font-medium text-gray-700 capitalize">{key}</label>
+                                        <label className="block text-sm font-medium text-text-title mb-2 capitalize">{key}</label>
                                         <input
                                             type="text"
                                             value={details[key]}
                                             onChange={(e) => setDetails({ ...details, [key]: e.target.value })}
                                             placeholder={`Enter ${key}`}
-                                            className="w-full px-3 py-2 border text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+                                        border border-neutral-line 
+                                        text-text-body bg-white
+                                        placeholder:text-gray-400
+                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                        transition duration-200"
                                         />
                                     </div>
                                 ))}
                             </div>
-
+                                   {/* Category / Subcategory / Place */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <Dropdown
+                                    label="Category"
+                                    items={categorys?.data}
+                                    selected={selectedCategory}
+                                    setSelected={setSelectedCategory}
+                                    open={dropdownOpen.category}
+                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, category: open })}
+                                />
+                                <Dropdown
+                                    label="Sub Category"
+                                    items={subCategorys?.data}
+                                    selected={selectedSubCategory}
+                                    setSelected={setSelectedSubCategory}
+                                    open={dropdownOpen.subcategory}
+                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, subcategory: open })}
+                                />
+                                <Dropdown
+                                    label="Place"
+                                    items={newPlace?.data}
+                                    selected={selectedPlace}
+                                    setSelected={setSelectedPlace}
+                                    open={dropdownOpen.place}
+                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, place: open })}
+                                />
+                            </div>
                             {/* Description */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <label className="block text-sm font-medium text-text-title mb-2 capitalize">Description</label>
                                 <RichTextEditor
                                     value={description}
-                                    className="w-full px-4 py-2 border text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    className="w-full px-4 rounded-lg shadow-sm 
+                                        border border-neutral-line 
+                                        !text-text-body bg-white
+                                        placeholder:text-text-body
+                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                        transition duration-200"
                                     onChange={(val) => setDescription(val)}
                                 />
                             </div>
@@ -364,7 +406,12 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                         value={perPersonPrice}
                                         onChange={(e) => setPerPersonPrice(e.target.value)}
                                         placeholder="Enter price per person"
-                                        className="mt-2 w-full px-3 py-2 border text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                        className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
+                                        border border-neutral-line 
+                                        text-text-body bg-white
+                                        placeholder:text-gray-400
+                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                        transition duration-200"
                                     />
                                 )}
 
@@ -377,19 +424,29 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                                     value={gp.persons}
                                                     onChange={(e) => handleGroupPriceChange(idx, "persons", e.target.value)}
                                                     placeholder="Persons"
-                                                    className="flex-1 px-2 py-2 border text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                                    className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
+                                        border border-neutral-line 
+                                        text-text-body bg-white
+                                        placeholder:text-gray-400
+                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                        transition duration-200"
                                                 />
                                                 <input
                                                     type="number"
                                                     value={gp.price}
                                                     onChange={(e) => handleGroupPriceChange(idx, "price", e.target.value)}
                                                     placeholder="Price"
-                                                    className="flex-1 px-2 py-2 border text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                                    className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
+                                        border border-neutral-line 
+                                        text-text-body bg-white
+                                        placeholder:text-gray-400
+                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                        transition duration-200"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => removeGroupPriceRow(idx)}
-                                                    className="bg-red-500 text-white px-2 rounded-lg hover:bg-red-600"
+                                                    className="bg-brand-secondary text-white px-2 rounded-lg hover:bg-red-600"
                                                 >
                                                     ×
                                                 </button>
@@ -406,39 +463,13 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                 )}
                             </div>
 
-                            {/* Category / Subcategory / Place */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <Dropdown
-                                    label="Category"
-                                    items={categorys?.data}
-                                    selected={selectedCategory}
-                                    setSelected={setSelectedCategory}
-                                    open={dropdownOpen.category}
-                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, category: open })}
-                                />
-                                <Dropdown
-                                    label="Sub Category"
-                                    items={subCategorys?.data}
-                                    selected={selectedSubCategory}
-                                    setSelected={setSelectedSubCategory}
-                                    open={dropdownOpen.subcategory}
-                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, subcategory: open })}
-                                />
-                                <Dropdown
-                                    label="Place"
-                                    items={newPlace?.data}
-                                    selected={selectedPlace}
-                                    setSelected={setSelectedPlace}
-                                    open={dropdownOpen.place}
-                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, place: open })}
-                                />
-                            </div>
+                         
 
                             {/* Submit */}
                             <button
                                 type="submit"
                                 disabled={uploading}
-                                className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                                className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white py-3 rounded-lg hover:bg-brand-secondary transition disabled:opacity-50"
                             >
                                 {uploading ? <Loader2 className="animate-spin h-5 w-5" /> : <Upload size={18} />}
                                 {uploading ? "Uploading..." : "Add Tour"}

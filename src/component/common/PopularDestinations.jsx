@@ -1,55 +1,14 @@
 "use client";
 
+import { useNewPlaceContext } from "@/context/newPlaceContext";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function PopularDestinations() {
   // Dummy data (replace with API response)
-  const destinations = [
-    {
-      id: 1,
-      name: "AREQUIPA",
-      tours: 11,
-      image:
-        "https://images.unsplash.com/photo-1604977041230-0a1f6a6f4c1e?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 2,
-      name: "CUSCO",
-      tours: 21,
-      image:
-        "https://images.unsplash.com/photo-1546539782-6fc531453083?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 3,
-      name: "HUARAZ",
-      tours: 6,
-      image:
-        "https://images.unsplash.com/photo-1508264165352-258859e62245?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 4,
-      name: "IQUITOS",
-      tours: 8,
-      image:
-        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 5,
-      name: "LIMA",
-      tours: 10,
-      image:
-        "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      id: 6,
-      name: "PUNO",
-      tours: 7,
-      image:
-        "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?auto=format&fit=crop&w=800&q=80",
-    },
-  ];
+  const {newPlace}=useNewPlaceContext()
+  
 
   return (
     <section className="py-12 px-4 sm:px-8 lg:px-16">
@@ -63,9 +22,9 @@ export default function PopularDestinations() {
 
       {/* Destinations Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {destinations.map((dest, i) => (
+        {newPlace?.data?.map((dest, i) => (
           <motion.div
-            key={dest.id}
+            key={dest?._id}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
@@ -73,8 +32,8 @@ export default function PopularDestinations() {
           >
             {/* Destination Image */}
             <Image
-              src={dest.image}
-              alt={dest.name}
+              src={dest?.bannerImage || "/fallback.jpg"}
+              alt={dest?.placeName || "name"}
               width={600}
               height={400}
               className="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
@@ -85,8 +44,8 @@ export default function PopularDestinations() {
 
             {/* Destination Info */}
             <div className="absolute bottom-4 left-4 text-white">
-              <h3 className="text-xl font-bold">{dest.name}</h3>
-              <p className="text-sm font-semibold">({dest.tours} Tours)</p>
+              <h3 className="text-xl font-bold">{dest?.placeName}</h3>
+              <p className="text-sm font-semibold">12 Tours</p>
             </div>
           </motion.div>
         ))}

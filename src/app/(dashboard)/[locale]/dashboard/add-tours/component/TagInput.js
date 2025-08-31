@@ -18,7 +18,7 @@ const TagInput = ({ items, setter }) => {
                 {items.map((item, idx) => (
                     <div
                         key={idx + 1}
-                        className="flex items-center gap-1 bg-gray-200 px-2 py-1 rounded-full text-sm"
+                        className="flex items-center gap-1 bg-brand-primary px-2 py-1 rounded-full text-sm"
                     >
                         {item}
                         <button type="button" onClick={() => handleRemoveTag(setter, idx)}>
@@ -33,12 +33,17 @@ const TagInput = ({ items, setter }) => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Add item"
-                    className="flex-1 px-3 py-2 border rounded-lg text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
+                                        border border-neutral-line 
+                                        text-text-body bg-white
+                                        placeholder:text-gray-400
+                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                        transition duration-200 "
                 />
                 <button
                     type="button"
                     onClick={() => handleAddTag(setter, input, setInput)}
-                    className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700"
+                    className="bg-accent-pink text-white px-3 py-2 rounded-lg hover:bg-secondary"
                 >
                     Add
                 </button>

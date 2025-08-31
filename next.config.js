@@ -5,7 +5,7 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-    domains: ["images.unsplash.com"], // ✅ add this line
+    domains: ["images.unsplash.com","res.cloudinary.com"], // ✅ add this line
   },
 };
  
