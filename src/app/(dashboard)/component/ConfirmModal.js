@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 
-export default function ConfirmModal({ open, onClose, onConfirm, title = 'Are you sure?', description = 'This action cannot be undone.' }) {
+export default function ConfirmModal({
+  open,
+  onClose,
+  onConfirm,
+  title = "Are you sure?",
+  description = "This action cannot be undone.",
+}) {
   return (
     <AnimatePresence>
       {open && (
@@ -17,21 +23,26 @@ export default function ConfirmModal({ open, onClose, onConfirm, title = 'Are yo
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="relative w-full max-w-md rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 text-white p-6 shadow-xl"
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="relative w-full max-w-md rounded-2xl bg-neutral-background border border-white/10 text-text-body p-6 shadow-xl"
           >
+            {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 text-white hover:text-red-500 transition"
+              className="absolute top-3 cursor-pointer right-3 text-text-body hover:text-accent-pink transition"
             >
               <X size={20} />
             </button>
-            <h2 className="text-xl font-semibold mb-2">{title}</h2>
-            <p className="text-sm text-gray-300 mb-6">{description}</p>
+
+            {/* Title + Description */}
+            <h2 className="text-xl font-semibold mb-2 text-text-title">{title}</h2>
+            <p className="text-sm text-text-body mb-6">{description}</p>
+
+            {/* Actions */}
             <div className="flex justify-end gap-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 rounded-md bg-white/20 hover:bg-white/30 transition text-white"
+                className="px-4 py-2 cursor-pointer rounded-md bg-brand-primary hover:bg-brand-primary transition text-white"
               >
                 Cancel
               </button>
@@ -40,7 +51,7 @@ export default function ConfirmModal({ open, onClose, onConfirm, title = 'Are yo
                   onConfirm();
                   onClose();
                 }}
-                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 transition text-white font-medium"
+                className="px-4 py-2 rounded-md  cursor-pointer bg-accent-pink hover:bg-brand-secondary transition text-white font-medium"
               >
                 Confirm
               </button>

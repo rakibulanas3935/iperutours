@@ -69,13 +69,13 @@ export default function AddPlaceModal({ open, onClose, onSuccess }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-auto"
+          className="fixed inset-0 z-[9999] bg-neutral-background/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 md:p-8 text-gray-800 overflow-auto max-h-[90vh]"
+            className="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 md:p-8 text-text-body overflow-auto max-h-[90vh]"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
@@ -84,49 +84,57 @@ export default function AddPlaceModal({ open, onClose, onSuccess }) {
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-gray-600 hover:text-red-500 transition"
+              className="absolute top-4 right-4 text-text-body hover:text-accent-pink transition"
             >
               <X size={24} />
             </button>
 
             {/* Title */}
-            <h2 className="text-2xl font-bold mb-6 text-center">➕ Add New Place</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center text-text-title">
+              ➕ Add New Place
+            </h2>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Place Name */}
               <div>
-                <label className="block font-medium mb-2">Place Name</label>
+                <label className="block font-medium mb-2 text-text-title">
+                  Place Name
+                </label>
                 <input
                   type="text"
                   name="placeName"
                   value={formData.placeName}
                   onChange={handleChange}
                   placeholder="Enter place name"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                  className="w-full px-4 py-2 rounded-lg border border-neutral-line focus:ring-2 focus:ring-brand-primary focus:outline-none"
                   required
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="block font-medium mb-2">Description</label>
+                <label className="block font-medium mb-2 text-text-title">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Write a short description..."
                   rows="4"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                  className="w-full px-4 py-2 rounded-lg border border-neutral-line focus:ring-2 focus:ring-brand-primary focus:outline-none"
                   required
                 ></textarea>
               </div>
 
               {/* Banner Image */}
               <div>
-                <label className="block font-medium mb-2">Banner Image</label>
+                <label className="block font-medium mb-2 text-text-title">
+                  Banner Image
+                </label>
                 <div className="flex items-center gap-4">
-                  <label className="flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-indigo-400 transition">
+                  <label className="flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed border-neutral-line rounded-xl cursor-pointer hover:border-brand-primary transition">
                     {preview ? (
                       <img
                         src={preview}
@@ -134,7 +142,7 @@ export default function AddPlaceModal({ open, onClose, onSuccess }) {
                         className="w-full h-full object-cover rounded-xl"
                       />
                     ) : (
-                      <div className="flex flex-col items-center text-gray-400">
+                      <div className="flex flex-col items-center text-text-body/60">
                         <ImagePlus size={32} />
                         <span className="text-sm mt-2">Upload Image</span>
                       </div>
@@ -153,7 +161,7 @@ export default function AddPlaceModal({ open, onClose, onSuccess }) {
               <button
                 type="submit"
                 disabled={uploading}
-                className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-all disabled:opacity-50"
+                className="w-full flex items-center cursor-pointer justify-center gap-2 bg-brand-primary text-white py-3 rounded-lg font-semibold hover:bg-brand-secondary transition-all disabled:opacity-50"
               >
                 {uploading ? (
                   <>

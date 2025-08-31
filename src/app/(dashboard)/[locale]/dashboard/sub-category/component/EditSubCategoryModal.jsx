@@ -70,37 +70,39 @@ export default function EditSubCategoryModal({ open, onClose, subCategory, onSuc
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="relative w-full max-w-md rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 text-white p-6 shadow-xl"
+            className="relative w-full max-w-md rounded-2xl bg-white shadow-xl border border-[var(--color-neutral-line)] p-6 text-[var(--color-text-body)]"
           >
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 text-white hover:text-red-500 transition"
+              className="absolute top-3 right-3 text-[var(--color-text-title)] hover:text-[var(--color-accent-pink)] transition"
             >
               <X size={20} />
             </button>
 
             {/* Title */}
-            <h2 className="text-2xl font-bold mb-4">Edit Sub Category</h2>
+            <h2 className="text-2xl font-bold mb-4 text-[var(--color-text-title)]">
+              Edit Sub Category
+            </h2>
 
             {/* Form */}
             <form onSubmit={handleUpdate} className="space-y-4">
               {/* Category Dropdown */}
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-[var(--color-text-body)] mb-1">
                   Select Category
                 </label>
                 <button
                   type="button"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="w-full flex justify-between items-center px-3 py-2 border rounded-lg bg-white/20 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="w-full flex justify-between items-center px-3 py-2 border rounded-lg bg-[var(--color-neutral-background)] text-[var(--color-text-title)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)]"
                 >
                   {selectedCategory ? selectedCategory.name : "-- Choose a category --"}
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </button>
 
                 {dropdownOpen && (
-                  <ul className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white/90 text-black border border-gray-300 rounded-lg shadow-lg">
+                  <ul className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white text-[var(--color-text-body)] border border-[var(--color-neutral-line)] rounded-lg shadow-lg">
                     {categorys?.data?.map((cat) => (
                       <li
                         key={cat._id}
@@ -108,7 +110,7 @@ export default function EditSubCategoryModal({ open, onClose, subCategory, onSuc
                           setSelectedCategory(cat);
                           setDropdownOpen(false);
                         }}
-                        className="px-4 py-2 hover:bg-green-100 cursor-pointer"
+                        className="px-4 py-2 hover:bg-[var(--color-brand-primary)] hover:text-white cursor-pointer"
                       >
                         {cat.name}
                       </li>
@@ -119,7 +121,7 @@ export default function EditSubCategoryModal({ open, onClose, subCategory, onSuc
 
               {/* Sub Category Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-[var(--color-text-body)] mb-1">
                   Sub Category Name
                 </label>
                 <input
@@ -127,7 +129,7 @@ export default function EditSubCategoryModal({ open, onClose, subCategory, onSuc
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter sub category name"
-                  className="w-full border border-white/10 rounded-lg px-3 py-2 bg-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="w-full border border-[var(--color-neutral-line)] rounded-lg px-3 py-2 bg-[var(--color-neutral-background)] text-[var(--color-text-title)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)]"
                 />
               </div>
 
@@ -136,14 +138,14 @@ export default function EditSubCategoryModal({ open, onClose, subCategory, onSuc
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 rounded-md bg-white/20 hover:bg-white/30 transition text-white"
+                  className="px-4 py-2 rounded-md bg-[var(--color-neutral-background)] hover:bg-[var(--color-neutral-line)] transition text-[var(--color-text-title)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 transition text-white font-medium disabled:opacity-50"
+                  className="px-4 py-2 rounded-md bg-[var(--color-brand-primary)] hover:bg-[#5e8f2c] transition text-white font-medium disabled:opacity-50"
                 >
                   {loading ? "Updating..." : "Update Sub Category"}
                 </button>

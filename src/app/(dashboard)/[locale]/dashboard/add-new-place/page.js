@@ -64,7 +64,7 @@ const AddSubCategory = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-hidden rounded-xl border border-neutral-line bg-white shadow">
+        <div className="overflow-x-auto rounded-xl border border-neutral-line bg-white shadow">
           <table className="min-w-full">
             <thead className="bg-neutral-background text-text-title text-sm">
               <tr>
@@ -97,7 +97,7 @@ const AddSubCategory = () => {
                       onClick={() => {
                         setShowView(place)
                       }}
-                      className="inline-flex items-center justify-center bg-accent-teal hover:bg-brand-secondary text-white rounded-md p-2 transition"
+                      className="inline-flex cursor-pointer items-center justify-center bg-accent-teal hover:bg-brand-secondary text-white rounded-md p-2 transition"
                     >
                       <Eye size={18} />
                     </button>
@@ -106,7 +106,7 @@ const AddSubCategory = () => {
                       onClick={() => {
                         setEditNewPlaceModalOpen(place);
                       }}
-                      className="inline-flex items-center justify-center bg-accent-yellow hover:bg-brand-primary text-text-title font-semibold rounded-md p-2 transition"
+                      className="inline-flex cursor-pointer items-center justify-center bg-accent-yellow hover:bg-brand-primary text-text-title font-semibold rounded-md p-2 transition"
                     >
                       <Pencil size={18} />
                     </button>
@@ -114,7 +114,7 @@ const AddSubCategory = () => {
 
                     <button
                       onClick={() => handleReject(place?._id)}
-                      className="inline-flex items-center justify-center bg-accent-pink hover:bg-brand-secondary text-white rounded-md p-2 transition"
+                      className="inline-flex cursor-pointer items-center justify-center bg-accent-pink hover:bg-brand-secondary text-white rounded-md p-2 transition"
                     >
                       <Trash size={18} />
                     </button>
@@ -154,8 +154,8 @@ const AddSubCategory = () => {
         open={showConfirm}
         onClose={() => setShowConfirm(false)}
         onConfirm={confirmAction}
-        title="Reject this project?"
-        description="This will reject the project. It will not be publicly visible."
+        title="Delete this Place ?"
+        description="This will Delete the Place. It will not be publicly visible."
       />
 
       <ViewModal

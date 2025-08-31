@@ -50,7 +50,7 @@ export default function EditCategoryModal({ open, onClose, category, onSuccess }
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+          className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center px-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -60,23 +60,25 @@ export default function EditCategoryModal({ open, onClose, category, onSuccess }
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="relative w-full max-w-md rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 text-white p-6 shadow-xl"
+            className="relative w-full max-w-md rounded-2xl bg-white border border-neutral-line text-text-body p-6 shadow-xl"
           >
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 text-white hover:text-red-500 transition"
+              className="absolute top-3 right-3 text-text-body hover:text-accent-pink transition"
             >
               <X size={20} />
             </button>
 
             {/* Title */}
-            <h2 className="text-2xl font-bold mb-4">Edit Category</h2>
+            <h2 className="text-2xl font-bold mb-4 text-text-title">
+              Edit Category
+            </h2>
 
             {/* Form */}
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-text-body mb-1">
                   Category Name
                 </label>
                 <input
@@ -84,7 +86,7 @@ export default function EditCategoryModal({ open, onClose, category, onSuccess }
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter category name"
-                  className="w-full border border-white/10 rounded-lg px-3 py-2 bg-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="w-full border border-neutral-line rounded-lg px-3 py-2 bg-neutral-background text-text-body placeholder-text-body/60 focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 />
               </div>
 
@@ -93,14 +95,14 @@ export default function EditCategoryModal({ open, onClose, category, onSuccess }
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 rounded-md bg-white/20 hover:bg-white/30 transition text-white"
+                  className="px-4 py-2 rounded-md bg-accent-teal hover:bg-brand-secondary transition text-white"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 transition text-white font-medium disabled:opacity-50"
+                  className="px-4 py-2 rounded-md bg-brand-primary hover:bg-brand-secondary transition text-white font-medium disabled:opacity-50"
                 >
                   {loading ? "Updating..." : "Update Category"}
                 </button>
