@@ -1,145 +1,170 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, MapPin,  Languages, Dumbbell } from 'lucide-react';
+import { Clock, MapPin, Languages, Dumbbell } from 'lucide-react';
 
-export default function TripTabs() {
-  const [activeTab, setActiveTab] = useState("Details");
+export default function TripInfo() {
+  const sections = [
+    "Details",
+    "Inclusion",
+    "Description",
+    "What to bring",
+    "Cancellation",
+    "Reviews",
+  ];
 
-  const tabs = ["Details", "Inclusion", "Description", "What to bring", "Cancellation", "Reviews"];
+  const [activeSection, setActiveSection] = useState("Details");
+
+  // Update active section on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      let current = "Details";
+      sections.forEach((sec) => {
+        const id = sec.replace(/\s+/g, "-").toLowerCase();
+        const element = document.getElementById(id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 120 && rect.bottom >= 120) {
+            current = sec;
+          }
+        }
+      });
+      setActiveSection(current);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className=" w-full max-w-7xl mx-auto p-4 lg:p-10">
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b pb-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === tab
-                ? "bg-blue-100 text-blue-700 border border-blue-300"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+    <div className="w-full max-w-7xl mx-auto p-4">
+      {/* Sticky Nav */}
+      <div className="sticky top-0 z-50 bg-white border-b py-3 mb-10">
+        <div className="flex flex-wrap gap-3">
+          {sections?.map((section) => {
+            const id = section.replace(/\s+/g, "-").toLowerCase();
+            return (
+              <a
+                key={section}
+                href={`#${id}`}
+                onClick={() => {
+                  e.preventDefault()
+                  setActiveSection(section)
+                }}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeSection === section
+                    ? "bg-brand-secondary text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {section}
+              </a>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Content */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 10 }}
+      {/* Sections */}
+      <motion.section
+        id="details"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="mt-6"
+        transition={{ duration: 0.4 }}
+        className="mb-12 scroll-mt-28"
       >
-        {activeTab === "Details" && (
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Details</h2>
+        <p className="text-gray-700 text-sm mb-4">
+          Explore the highlights of the Sacred Valley of the Incas in a single
+          day filled with history, culture, and breathtaking landscapes. This
+          tour takes you on an unforgettable journey through this historically
+          and culturally rich region.
+        </p>
+        <div className="space-y-4 text-sm">
+          <div className="flex items-center gap-2">
+            <Clock size={18} className="text-gray-600" />
+            <strong className="w-28 text-gray-700">Duration:</strong>
+            <span>11.5 hours</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock size={18} className="text-gray-600" />
+            <strong className="w-28 text-gray-700">Schedule:</strong>
+            <span>7:00 AM</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin size={18} className="text-gray-600" />
+            <strong className="w-28 text-gray-700">Meeting point:</strong>
+            <span>Pickup at your accommodation</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Languages size={18} className="text-gray-600" />
+            <strong className="w-28 text-gray-700">Guide:</strong>
+            <span>English, Spanish</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Dumbbell size={18} className="text-gray-600" />
+            <strong className="w-28 text-gray-700">Fitness level:</strong>
+            <span>Low, Intermediate</span>
+          </div>
+        </div>
+      </motion.section>
+
+      <section id="inclusion" className="mb-12 scroll-mt-28">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Inclusion</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <p className="text-gray-700 text-sm mb-4">
-              Explore the highlights of the Sacred Valley of the Incas in a single day filled with history, culture, and breathtaking landscapes. This tour takes you on an unforgettable journey through this historically and culturally rich region.
-            </p>
-
-            {/* Details List */}
-            <div className="space-y-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Clock className="text-gray-600" size={18} />
-                <strong className="w-28 text-gray-700">Duration:</strong>
-                <span>11.5 hours</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="text-gray-600" size={18} />
-                <strong className="w-28 text-gray-700">Schedule:</strong>
-                <span>7:00 AM</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="text-gray-600" size={18} />
-                <strong className="w-28 text-gray-700">Meeting point:</strong>
-                <span>Pickup at your accommodation</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Languages className="text-gray-600" size={18} />
-                <strong className="w-28 text-gray-700">Guide:</strong>
-                <span>English, Spanish</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Dumbbell className="text-gray-600" size={18} />
-                <strong className="w-28 text-gray-700">Fitness level:</strong>
-                <span>Low, Intermediate</span>
-              </div>
-            </div>
-
-            {/* Included / Excluded */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div>
-                <h3 className="text-lg font-semibold text-green-700 mb-2">Included:</h3>
-                <ul className="space-y-1 text-sm">
-                  <li className="flex items-center gap-2">
-                    ✅ Hotel pickup
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✅ Transportation
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✅ Tour guide
-                  </li>
-                  <li className="flex items-center gap-2">
-                    ✅ Buffet lunch
-                  </li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-red-600 mb-2">Excluded:</h3>
-                <ul className="space-y-1 text-sm">
-                  <li className="flex items-start gap-2">
-                    ❌ Tourist Ticket: Partial ticket for foreigners s/70 (US$19), partial ticket for Peruvians s/40
-                  </li>
-                  <li className="flex items-start gap-2">
-                    ❌ Entrance ticket to the Salt Mines of Maras: Foreigners s/20 (US$ 5.5), and Peruvians s/15
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <h3 className="text-lg font-semibold text-green-700 mb-2">Included</h3>
+            <ul className="space-y-1 text-sm">
+              <li>✅ Hotel pickup</li>
+              <li>✅ Transportation</li>
+              <li>✅ Tour guide</li>
+              <li>✅ Buffet lunch</li>
+            </ul>
           </div>
-        )}
-
-        {activeTab === "Inclusion" && (
-          <p className="text-gray-700 text-sm">
-            ✅ Hotel pickup, ✅ Transportation, ✅ Tour guide, ✅ Buffet lunch
-          </p>
-        )}
-
-        {activeTab === "Description" && (
-          <p className="text-gray-700 text-sm">
-            This is the full description of the Sacred Valley day trip. You will experience beautiful landscapes, cultural history, and guided tours across multiple sites.
-          </p>
-        )}
-
-        {activeTab === "What to bring" && (
-          <ul className="list-disc pl-5 text-gray-700 text-sm space-y-1">
-            <li>Comfortable clothes</li>
-            <li>Walking shoes</li>
-            <li>Water bottle</li>
-            <li>Sunscreen & hat</li>
-          </ul>
-        )}
-
-        {activeTab === "Cancellation" && (
-          <p className="text-gray-700 text-sm">
-            Free cancellation up to 24 hours in advance. No refunds after that time.
-          </p>
-        )}
-
-        {activeTab === "Reviews" && (
-          <div className="text-gray-700 text-sm">
-            <p>⭐⭐⭐⭐⭐ "Amazing trip! Highly recommend."</p>
-            <p>⭐⭐⭐⭐ "Great experience, but the bus was a little crowded."</p>
+          <div>
+            <h3 className="text-lg font-semibold text-red-600 mb-2">Excluded</h3>
+            <ul className="space-y-1 text-sm">
+              <li>❌ Tourist Ticket: Foreigners s/70 (US$19), Peruvians s/40</li>
+              <li>❌ Salt Mines of Maras: Foreigners s/20 (US$5.5), Peruvians s/15</li>
+            </ul>
           </div>
-        )}
-      </motion.div>
+        </div>
+      </section>
+
+      <section id="description" className="mb-12 scroll-mt-28">
+        <h2 className="text-xl font-bold text-gray-800 mb-3">Description</h2>
+        <p className="text-sm text-gray-700">
+          This is the full description of the Sacred Valley day trip. You will
+          experience beautiful landscapes, cultural history, and guided tours
+          across multiple sites.
+        </p>
+      </section>
+
+      <section id="what-to-bring" className="mb-12 scroll-mt-28">
+        <h2 className="text-xl font-bold text-gray-800 mb-3">What to bring</h2>
+        <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+          <li>Comfortable clothes</li>
+          <li>Walking shoes</li>
+          <li>Water bottle</li>
+          <li>Sunscreen & hat</li>
+        </ul>
+      </section>
+
+      <section id="cancellation" className="mb-12 scroll-mt-28">
+        <h2 className="text-xl font-bold text-gray-800 mb-3">Cancellation</h2>
+        <p className="text-sm text-gray-700">
+          Free cancellation up to 24 hours in advance. No refunds after that
+          time.
+        </p>
+      </section>
+
+      <section id="reviews" className="mb-12 scroll-mt-28">
+        <h2 className="text-xl font-bold text-gray-800 mb-3">Reviews</h2>
+        <div className="space-y-2 text-sm text-gray-700">
+          <p>⭐⭐⭐⭐⭐ "Amazing trip! Highly recommend."</p>
+          <p>⭐⭐⭐⭐ "Great experience, but the bus was a little crowded."</p>
+        </div>
+      </section>
     </div>
   );
 }

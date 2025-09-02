@@ -31,20 +31,10 @@ export default function Header({ locale = "en" }) {
   const messages = locale === "de" ? de : en;
  
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setShowTop(false);
-      } else {
-        setShowTop(true);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+ 
 
   return (
-    <header className="w-full sticky top-0 z-50 shadow-sm bg-white">
+    <header className="w-full  z-50 shadow-sm bg-white">
       {/* Announcement Bar - hides on scroll */}
       <AnimatePresence>
         {showTop && (

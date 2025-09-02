@@ -11,6 +11,8 @@ import useAxiosGet from '@/utils/useAxiosGet';
 import CommonLoader from '@/component/common/CommonLoader';
 import { useParams } from 'next/navigation';
 import PageNavigation from '@/component/common/PageNavigation';
+import BookingCalculator from '@/component/common/BookingCalculator';
+import BookingBox from '@/component/common/BookingBox';
 
 export default function SacredValleyTrip() {
     const [selectedDate, setSelectedDate] = useState();
@@ -27,7 +29,6 @@ export default function SacredValleyTrip() {
     const images = tourDetails?.data?.images || [];
 
     return (
-        <>
             <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Left Column */}
                 <div className='col-span-2'>
@@ -101,7 +102,7 @@ export default function SacredValleyTrip() {
                     </motion.div>
 
                     {/* Thumbnails */}
-                    <div className="flex mt-4 gap-3 overflow-x-auto">
+                    {/* <div className="flex mt-4 gap-3 overflow-x-auto">
                         {images.map((img, index) => (
                             <motion.div
                                 key={index}
@@ -115,14 +116,15 @@ export default function SacredValleyTrip() {
                                 <Image src={img} alt={tourDetails?.title} fill className="object-cover" />
                             </motion.div>
                         ))}
-                    </div>
+                    </div> */}
 
 
                 </div>
 
 
+<div className='row-span-2'>
                 <motion.div
-                    className="w-full  max-w-lg bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl shadow-lg p-6 sticky top-20"
+                    className="w-full max-w-lg bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl shadow-lg p-6 sticky  top-10"
                     initial={{ x: 100, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.6 }}
@@ -185,7 +187,7 @@ export default function SacredValleyTrip() {
                     </div>
 
                     {/* Duration */}
-                    <div className="mt-4">
+                    <div className="mt-4 mb-4">
                         <label className="font-medium text-gray-700">Duration</label>
                         <div className="w-full border rounded-lg p-2 bg-gray-50 text-gray-700 text-sm">
                             {tourDetails?.duration || '11 hours'}
@@ -193,25 +195,20 @@ export default function SacredValleyTrip() {
                     </div>
 
                     {/* People */}
-                    <div className="mt-4">
-                        <label className="font-medium text-gray-700">Number of people</label>
-                        <select className="w-full border mt-1 rounded-lg p-2 text-gray-600 text-sm">
-                            {[1, 2, 3, 4, 5].map((num) => (
-                                <option key={num}>{num}</option>
-                            ))}
-                        </select>
-                    </div>
-
+                   
+                    <BookingCalculator/>
+                    {/* <BookingBox/> */}
                     {/* Book Button */}
                     <button className="mt-6 w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-brand-secondary transition-all">
                         Book Now
                     </button>
                 </motion.div>
-
+                </div>
+                <div className='col-span-2'>
+                 <TripTabs />
+                 </div>
 
             </div>
-            <TripTabs />
-        </>
 
     );
 }
