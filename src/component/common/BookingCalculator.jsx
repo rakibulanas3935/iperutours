@@ -3,17 +3,16 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 
-export default function BookingCalculator() {
+export default function BookingCalculator({data,setPeople,people,setCounts,counts,total,setTotal}) {
   // Prices
-  const basePricePerPerson = 50; // Example: $50 per person
+  const basePricePerPerson = data?.pricing?.perPersonPrice; 
   const services = [
     { id: "lunch", name: "Lunch", price: 20 },
     { id: "sunset", name: "Sunset experience + hotel pickup", price: 40 },
     { id: "pickup", name: "Hotel pickup", price: 15 },
   ];
 
-  const [counts, setCounts] = useState({ adult: 1, child: 0, infant: 0 });
-  const [people, setPeople] = useState(1);
+  
   const [selectedServices, setSelectedServices] = useState([]);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -59,7 +58,7 @@ export default function BookingCalculator() {
     const service = services.find((s) => s.id === id);
     return sum + (service ? service.price : 0);
   }, 0);
-  const total = basePrice + servicesTotal;
+  setTotal(basePrice + servicesTotal);
 
   return (
     <div className="max-w-sm mx-auto space-y-4">

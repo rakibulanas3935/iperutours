@@ -1,62 +1,58 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, ArrowLeft, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import Link from 'next/link';
 import CartPage from './CartPage';
+import { useCartContext } from '@/context/cartContext';
 
+export default function CartWithReview({ onNext }) {
+    const { cartItem } = useCartContext();
 
-
-export default function CartWithReview({onNext}) {
+    // ✅ Calculate total dynamically
+    const basePrice = cartItem.reduce((sum, item) => sum + item.totalPrice, 0);
+    const servicesFee = 405; // Fixed service fee
+    const totalPrice = basePrice + servicesFee;
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
             {/* Left Column */}
             <div className='col-span-2'>
-                <CartPage />
+                <CartPage cartItem={cartItem} />
             </div>
 
-
+            {/* Right Column */}
             <div className='row-span-2'>
                 <motion.div
-                    className="w-full max-w-lg bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl shadow-lg p-6 sticky  top-10"
+                    className="w-full max-w-lg bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl shadow-lg p-6 sticky top-10"
                     initial={{ x: 100, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.6 }}
                 >
-                    
                     <div className="border-t pt-3 text-sm">
-                        <div className='text-2xl'>Total</div>
-                        <div className="flex justify-between">
+                        <div className='text-2xl font-bold mb-3'>Total</div>
+                        <div className="flex justify-between mb-2">
                             <span>Base price</span>
-                            <span className="font-semibold">US$ 400</span>
+                            <span className="font-semibold">US$ {basePrice}</span>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="flex justify-between mb-2">
                             <span>Services</span>
-                            <span className="font-semibold">US$ 405</span>
+                            <span className="font-semibold">US$ {servicesFee}</span>
                         </div>
                         <div className="flex justify-between border-t mt-2 pt-2 text-lg font-bold">
                             <span>Total</span>
-                            <span>US$409</span>
+                            <span>US$ {totalPrice}</span>
                         </div>
                     </div>
-                    {/* <BookingBox/> */}
+
                     {/* Book Button */}
-                
-                        <button className="mt-6 cursor-pointer w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-brand-secondary transition-all"
-                        onClick={onNext}>
-                            Book Now
-                        </button>
-                 
+                    <button
+                        className="mt-6 cursor-pointer w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-brand-secondary transition-all"
+                        onClick={onNext}
+                    >
+                        Book Now
+                    </button>
                 </motion.div>
             </div>
-           
-
         </div>
-
     );
 }

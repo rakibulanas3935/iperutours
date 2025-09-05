@@ -14,6 +14,7 @@ import Footer from '@/component/common/Footer';
 import { ActiveMenuProvider } from '@/context/activeMenuContext';
 import { ToastContainer } from 'react-toastify';
 import { CountryProvider } from '@/context/countryContext';
+import { CartProvider } from '@/context/cartContext';
 
 
 
@@ -40,6 +41,7 @@ export default async function LocaleLayout({
         <ActiveMenuProvider>
         <NextIntlClientProvider>
           <UserProvider>
+            <CartProvider>
             <CountryProvider>
             <TourProvider>
             <NewPlaceProvider>
@@ -55,6 +57,7 @@ export default async function LocaleLayout({
             </NewPlaceProvider>
             </TourProvider>
             </CountryProvider>
+            </CartProvider>
           </UserProvider>
         </NextIntlClientProvider>
         </ActiveMenuProvider>

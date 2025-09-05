@@ -21,6 +21,7 @@ import { useNewPlaceContext } from "@/context/newPlaceContext";
 import { useActiveMenuContext } from "@/context/activeMenuContext";
 import { data } from "autoprefixer";
 import { useUserContext } from "@/context/userContext";
+import CartIcon from "./CartIcon";
 
 export default function Header({ locale = "en" }) {
   const [showTop, setShowTop] = useState(true);
@@ -32,8 +33,6 @@ export default function Header({ locale = "en" }) {
   const pathname = usePathname();
   const messages = locale === "pt" ? pt : en;
 
-
-  console.log("users", user)
 
   return (
     <header className="w-full  z-50 shadow-sm bg-white">
@@ -144,17 +143,9 @@ export default function Header({ locale = "en" }) {
           </div>
 
           {/* Cart */}
-          <Link href="/cart" className="relative">
-            <ShoppingCart
-              size={22}
-              className={
-                pathname === "/cart" ? "text-brand-secondary" : "text-text-title"
-              }
-            />
-            <span className="absolute -top-2 -right-2 bg-accent-yellow text-xs text-black font-semibold rounded-full w-5 h-5 flex items-center justify-center">
-              0
-            </span>
-          </Link>
+          {/* <Link href="/cart" className="relative"> */}
+            <CartIcon/>
+          {/* </Link> */}
 
           {/* Search */}
           <Link href="/search">

@@ -9,19 +9,25 @@ import 'react-day-picker/dist/style.css';
 import TripTabs from '@/component/common/TripTabs';
 import useAxiosGet from '@/utils/useAxiosGet';
 import CommonLoader from '@/component/common/CommonLoader';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import PageNavigation from '@/component/common/PageNavigation';
 import BookingCalculator from '@/component/common/BookingCalculator';
 import BookingBox from '@/component/common/BookingBox';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
+import { addToCart } from '@/component/common/cartUtils';
+import { useCartContext } from '@/context/cartContext';
 
 export default function SacredValleyTrip() {
     const [selectedDate, setSelectedDate] = useState();
     const [currentImage, setCurrentImage] = useState(0);
     const { id } = useParams();
+    const router = useRouter();
     const [tourDetails, getTourDetails, tourDetailsLoading] = useAxiosGet([]);
-    console.log("tourDetails",tourDetails)
-
+    const {reloadCart}=useCartContext()
+    const [counts, setCounts] = useState({ adult: 1, child: 0, infant: 0 });
+    const [people, setPeople] = useState(1);
+    const [total, setTotal] = useState(0)
     useEffect(() => {
         getTourDetails(`http://localhost:3000/api/v1/tours/${id}`);
     }, [id]);
@@ -29,6 +35,24 @@ export default function SacredValleyTrip() {
     if (tourDetailsLoading) return <CommonLoader />;
 
     const images = tourDetails?.data?.images || [];
+
+    const handleBooking = () => {
+        const bookingData = {
+            selectedDate: selectedDate,
+            tour: tourDetails?.data,
+            numberOfPeople: people,
+            totalPrice: total,
+            bookingDate: new Date().toISOString(),
+        };
+        const result = addToCart(bookingData);
+
+        if (!result.success) {
+            toast.success(result.message);
+            return;
+        }
+        reloadCart()
+        router.push('/cart');
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -58,7 +82,7 @@ export default function SacredValleyTrip() {
                             Home / <span className="text-orange-500">Peru</span> /{' '}
                             <span className="text-orange-500">Cusco</span>
                         </div> */}
-                   
+
                 </div>
                 <motion.div
                     className="relative w-full h-[450px] rounded-2xl overflow-hidden shadow-lg"
@@ -199,14 +223,16 @@ export default function SacredValleyTrip() {
 
                     {/* People */}
 
-                    <BookingCalculator />
+                    <BookingCalculator data={tourDetails?.data} total={total} setPeople={setPeople} people={people} setCounts={setCounts} counts={counts} setTotal={setTotal} />
                     {/* <BookingBox/> */}
                     {/* Book Button */}
-                    <Link href="/cart">
-                        <button className="mt-6 cursor-pointer w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-brand-secondary transition-all">
-                            Book Now
-                        </button>
-                    </Link>
+
+                    <button className="mt-6 cursor-pointer w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-brand-secondary transition-all"
+                        onClick={handleBooking}
+                    >
+                        Book Now
+                    </button>
+
                 </motion.div>
             </div>
             <div className='col-span-2'>
