@@ -20,7 +20,7 @@ const UserProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        " https://nova-next-gen-server.onrender.com/api/v1/users/current-user",
+        "http://localhost:3000/api/v1/users/current-user",
         {
           method: "GET",
           headers: {

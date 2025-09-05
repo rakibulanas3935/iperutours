@@ -12,6 +12,8 @@ import { NewPlaceProvider } from '@/context/newPlaceContext';
 import { TourProvider } from '@/context/tourContext';
 import Footer from '@/component/common/Footer';
 import { ActiveMenuProvider } from '@/context/activeMenuContext';
+import { ToastContainer } from 'react-toastify';
+import { CountryProvider } from '@/context/countryContext';
 
 
 
@@ -38,6 +40,7 @@ export default async function LocaleLayout({
         <ActiveMenuProvider>
         <NextIntlClientProvider>
           <UserProvider>
+            <CountryProvider>
             <TourProvider>
             <NewPlaceProvider>
             <CategoryProvider>
@@ -45,10 +48,13 @@ export default async function LocaleLayout({
                 <Header />
                 {children}
                 <Footer/>
+
+                 <ToastContainer />
               </SubCategoryProvider>
             </CategoryProvider>
             </NewPlaceProvider>
             </TourProvider>
+            </CountryProvider>
           </UserProvider>
         </NextIntlClientProvider>
         </ActiveMenuProvider>

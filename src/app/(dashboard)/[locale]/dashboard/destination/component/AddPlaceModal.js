@@ -1,10 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, ImagePlus, Loader2 } from "lucide-react";
+import { X, Upload, ImagePlus, Loader2, ChevronDown } from "lucide-react";
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useCountryContext } from "@/context/countryContext";
 
 export default function AddPlaceModal({ open, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -14,7 +15,9 @@ export default function AddPlaceModal({ open, onClose, onSuccess }) {
   });
   const [preview, setPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
-
+  const {country } = useCountryContext();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -47,6 +50,7 @@ export default function AddPlaceModal({ open, onClose, onSuccess }) {
       );
 
       await axios.post("http://localhost:3000/api/v1/places", {
+        country:selectedCountry?._id,
         placeName: formData.placeName,
         description: formData.description,
         bannerImage: data.url,
@@ -84,29 +88,61 @@ export default function AddPlaceModal({ open, onClose, onSuccess }) {
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-text-body hover:text-accent-pink transition"
+              className="absolute cursor-pointer top-4 right-4 text-text-body hover:text-accent-pink transition"
             >
               <X size={24} />
             </button>
 
             {/* Title */}
             <h2 className="text-2xl font-bold mb-6 text-center text-text-title">
-              ➕ Add New Place
+              ➕ Add New Destination
             </h2>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Place Name */}
+              <div className="relative">
+								<label className="block text-sm font-medium text-[var(--color-text-body)] mb-1">
+									Select Country
+								</label>
+								<button
+									type="button"
+									onClick={() => setDropdownOpen(!dropdownOpen)}
+									className="w-full flex justify-between items-center px-3 py-2 border rounded-lg bg-white text-[var(--color-text-body)] border-[var(--color-neutral-line)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)]"
+								>
+									{selectedCountry
+										? selectedCountry?.name
+										: "-- Choose a Country --"}
+									<ChevronDown className="ml-2 h-4 w-4" />
+								</button>
+
+								{dropdownOpen && (
+									<ul className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white text-[var(--color-text-body)] border border-[var(--color-neutral-line)] rounded-lg shadow-lg">
+										{country?.data?.map((cat) => (
+											<li
+												key={cat?._id}
+												onClick={() => {
+													setSelectedCountry(cat);
+													setDropdownOpen(false);
+												}}
+												className="px-4 py-2 hover:bg-[var(--color-brand-primary)] hover:text-white cursor-pointer"
+											>
+												{cat?.name}
+											</li>
+										))}
+									</ul>
+								)}
+							</div>
               <div>
                 <label className="block font-medium mb-2 text-text-title">
-                  Place Name
+                  Destination Name
                 </label>
                 <input
                   type="text"
                   name="placeName"
                   value={formData.placeName}
                   onChange={handleChange}
-                  placeholder="Enter place name"
+                  placeholder="Enter Destination name"
                   className="w-full px-4 py-2 rounded-lg border border-neutral-line focus:ring-2 focus:ring-brand-primary focus:outline-none"
                   required
                 />

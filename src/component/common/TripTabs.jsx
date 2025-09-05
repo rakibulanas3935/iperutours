@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, MapPin, Languages, Dumbbell } from 'lucide-react';
 
-export default function TripInfo() {
+export default function TripInfo({data}) {
   const sections = [
     "Details",
     "Inclusion",
@@ -38,7 +38,7 @@ export default function TripInfo() {
   }, []);
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
+    <div className="w-full  mx-auto">
       {/* Sticky Nav */}
       <div className="sticky top-0 z-50 bg-white border-b py-3 mb-10">
         <div className="flex flex-wrap gap-3">
@@ -133,11 +133,8 @@ export default function TripInfo() {
 
       <section id="description" className="mb-12 scroll-mt-28">
         <h2 className="text-xl font-bold text-gray-800 mb-3">Description</h2>
-        <p className="text-sm text-gray-700">
-          This is the full description of the Sacred Valley day trip. You will
-          experience beautiful landscapes, cultural history, and guided tours
-          across multiple sites.
-        </p>
+         <p className="mt-2 text-sm text-text-body"
+            dangerouslySetInnerHTML={{ __html: data?.description }}/>
       </section>
 
       <section id="what-to-bring" className="mb-12 scroll-mt-28">

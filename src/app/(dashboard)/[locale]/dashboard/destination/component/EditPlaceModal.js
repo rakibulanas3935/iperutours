@@ -1,11 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, ImagePlus, Loader2 } from "lucide-react";
+import { X, Upload, ImagePlus, Loader2, ChevronDown } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import useAxiosPost from "@/utils/useAxiosPost";
+import { useCountryContext } from "@/context/countryContext";
 
 export default function EditPlaceModal({ open, onClose, onSuccess, place }) {
   const [formData, setFormData] = useState({
@@ -16,7 +17,9 @@ export default function EditPlaceModal({ open, onClose, onSuccess, place }) {
   const [preview, setPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [, updateNewPlace, updateNewPlaceLoading] = useAxiosPost({}, "patch");
-
+  const { country } = useCountryContext();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
   // Prefill form with selected place data
   useEffect(() => {
     if (place) {
@@ -25,6 +28,7 @@ export default function EditPlaceModal({ open, onClose, onSuccess, place }) {
         description: place.description || "",
         bannerImage: place?.bannerImage,
       });
+      setSelectedCountry(place?.country)
       setPreview(place.bannerImage || null);
     }
   }, [place]);
@@ -70,6 +74,7 @@ export default function EditPlaceModal({ open, onClose, onSuccess, place }) {
       updateNewPlace(
         `http://localhost:3000/api/v1/places/${place?._id}`,
         {
+          country: selectedCountry?._id,
           placeName: formData.placeName,
           description: formData.description,
           bannerImage: imageUrl,
@@ -89,6 +94,8 @@ export default function EditPlaceModal({ open, onClose, onSuccess, place }) {
       setUploading(false);
     }
   };
+
+  console.log("palae",place)
 
   return (
     <AnimatePresence>
@@ -122,9 +129,41 @@ export default function EditPlaceModal({ open, onClose, onSuccess, place }) {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Place Name */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-[var(--color-text-body)] mb-1">
+                  Select Country
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="w-full flex justify-between items-center px-3 py-2 border rounded-lg bg-white text-[var(--color-text-body)] border-[var(--color-neutral-line)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)]"
+                >
+                  {selectedCountry
+                    ? selectedCountry?.name
+                    : "-- Choose a Country --"}
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </button>
+
+                {dropdownOpen && (
+                  <ul className="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white text-[var(--color-text-body)] border border-[var(--color-neutral-line)] rounded-lg shadow-lg">
+                    {country?.data?.map((cat) => (
+                      <li
+                        key={cat?._id}
+                        onClick={() => {
+                          setSelectedCountry(cat);
+                          setDropdownOpen(false);
+                        }}
+                        className="px-4 py-2 hover:bg-[var(--color-brand-primary)] hover:text-white cursor-pointer"
+                      >
+                        {cat?.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               <div>
                 <label className="block font-medium mb-2 text-text-title">
-                  Place Name
+                  Destination
                 </label>
                 <input
                   type="text"
@@ -186,7 +225,7 @@ export default function EditPlaceModal({ open, onClose, onSuccess, place }) {
               <button
                 type="submit"
                 disabled={uploading}
-                className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white py-3 rounded-lg font-semibold hover:bg-brand-secondary transition-all disabled:opacity-50"
+                className="w-full flex cursor-pointer items-center justify-center gap-2 bg-brand-primary text-white py-3 rounded-lg font-semibold hover:bg-brand-secondary transition-all disabled:opacity-50"
               >
                 {uploading ? (
                   <>

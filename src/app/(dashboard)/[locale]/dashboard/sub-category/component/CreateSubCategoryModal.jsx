@@ -130,14 +130,14 @@ export default function CreateSubCategoryModal({ open, onClose, onSuccess }) {
 								<button
 									type="button"
 									onClick={onClose}
-									className="px-4 py-2 rounded-md border border-[var(--color-neutral-line)] bg-white hover:bg-gray-100 transition text-[var(--color-text-body)]"
+									className="px-4 py-2 rounded-md cursor-pointer border border-[var(--color-neutral-line)] bg-white hover:bg-gray-100 transition text-[var(--color-text-body)]"
 								>
 									Cancel
 								</button>
 								<button
 									type="submit"
 									disabled={loading}
-									className="px-4 py-2 rounded-md bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] transition text-white font-medium disabled:opacity-50"
+									className="px-4 py-2 rounded-md bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-secondary)] cursor-pointer transition text-white font-medium disabled:opacity-50"
 								>
 									{loading ? "Saving..." : "Save Sub Category"}
 								</button>

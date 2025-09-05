@@ -7,7 +7,6 @@ import { Eye, Pencil, Plus, Trash } from "lucide-react";
 import useAxiosPost from "@/utils/useAxiosPost";
 import { useUserContext } from "@/context/userContext";
 import CommonLoader from "@/component/common/CommonLoader";
-import { useSubCategoryContext } from "@/context/subCategoryContext";
 import ViewModal from "@/app/(dashboard)/component/ViewModal";
 import ConfirmModal from "@/app/(dashboard)/component/ConfirmModal";
 import AddPlaceModal from "./component/AddPlaceModal";
@@ -46,7 +45,7 @@ const AddSubCategory = () => {
 
   };
 
-  console.log('newPlace',newPlace)
+
   if (newPlaceLoading) return <CommonLoader />;
 
   return (
@@ -54,12 +53,12 @@ const AddSubCategory = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-text-title">Place</h1>
+          <h1 className="text-3xl font-bold text-text-title">Destination</h1>
           <button
             onClick={() => setCreateNewPlaceModalOpen(true)}
-            className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white px-5 py-2.5 rounded-lg shadow-md transition-all duration-200"
+            className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-secondary cursor-pointer text-white px-5 py-2.5 rounded-lg shadow-md transition-all duration-200"
           >
-            <Plus className="w-5 h-5" /> Add New Place
+            <Plus className="w-5 h-5" /> Add New Destination
           </button>
         </div>
 
@@ -69,7 +68,7 @@ const AddSubCategory = () => {
             <thead className="bg-neutral-background text-text-title text-sm">
               <tr>
                 <th className="px-6 py-3 text-left font-semibold">Sl</th>
-                <th className="px-6 py-3 text-left font-semibold">Place Name</th>
+                <th className="px-6 py-3 text-left font-semibold">Destination Name</th>
                 <th className="px-6 py-3 text-left font-semibold">Banner</th>
                 <th className="px-6 py-3 text-center font-semibold">Actions</th>
               </tr>
@@ -164,8 +163,8 @@ const AddSubCategory = () => {
         title="Place Details"
         data={{
           image: showView?.bannerImage,
-          placeName: showView?.placeName,
-          placeDescription: showView?.description,
+          Destination: showView?.placeName,
+          Description: showView?.description,
           createdAt: showView?.createdAt,
         }}
       />

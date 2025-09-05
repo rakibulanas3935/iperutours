@@ -11,10 +11,15 @@ import TagInput from "./TagInput";
 import RichTextEditor from "@/app/(dashboard)/component/RichTextEditor";
 import useAxiosPost from "@/utils/useAxiosPost";
 import axios from "axios";
+import { useCountryContext } from "@/context/countryContext";
+import { toast } from "react-toastify";
 
 export default function AddTourModal({ open, onClose, onSuccess }) {
     const [title, setTitle] = useState("");
+    const [tourType, setTourType] = useState("");
+    const [facalites, setFacalites] = useState("");
     const [details, setDetails] = useState({
+        info: "",
         duration: "",
         schedule: "",
         meetingPoint: "",
@@ -31,11 +36,9 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
     const [perPersonPrice, setPerPersonPrice] = useState("");
     const [groupPrices, setGroupPrices] = useState([{ persons: "", price: "" }]);
     const { newPlace, newPlaceLoading } = useNewPlaceContext();
-    const { subCategorys, subCategorysLoading } = useSubCategoryContext();
-
-    const { categorys, categorysLoading, setReload } = useCategoryContext();
+    const { country, setReload, countryLoading } = useCountryContext();
     const [, createTour, createTourLoading] = useAxiosPost({}, "post");
-    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedCountry, setselectedCountry] = useState(null);
     const [selectedSubCategory, setSelectedSubCategory] = useState(null);
     const [selectedPlace, setSelectedPlace] = useState(null);
 
@@ -94,8 +97,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
         if (
             !title ||
             !description ||
-            !selectedCategory ||
-            !selectedSubCategory ||
+            !selectedCountry ||
             !selectedPlace ||
             images.length === 0
         ) {
@@ -120,6 +122,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                 title,
                 details,
                 description,
+                tourType,
                 included,
                 excluded,
                 whatToBring,
@@ -129,8 +132,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                     perPersonPrice: pricingType === "perPerson" ? perPersonPrice : undefined,
                     groupPrices: pricingType === "groupTier" ? groupPrices : [],
                 },
-                category: selectedCategory?._id,
-                subcategory: selectedSubCategory?._id,
+                country: selectedCountry?._id,
                 place: selectedPlace?._id,
             };
 
@@ -139,7 +141,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                     if (onSuccess) onSuccess();
                     onClose();
                 }
-            },true);
+            }, true);
             // toast.success("Tour added successfully!");
 
             // Reset form
@@ -153,7 +155,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
             setImagePreviews([]);
             setPerPersonPrice("");
             setGroupPrices([{ persons: "", price: "" }]);
-            setSelectedCategory(null);
+            setselectedCountry(null);
             setSelectedSubCategory(null);
             setSelectedPlace(null);
         } catch (err) {
@@ -224,23 +226,59 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
 
                         <form onSubmit={handleSubmit} className="space-y-6">
 
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-text-title mb-2">
-                            Title
-                            </label>
-                            <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            placeholder="Enter tour title"
-                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-text-title mb-2">
+                                    Title
+                                </label>
+                                <input
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Enter tour title"
+                                    className="w-full px-4 py-2.5 rounded-lg shadow-sm 
                                         border border-neutral-line 
                                         text-text-body bg-white
                                         placeholder:text-gray-400
                                         focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
                                         transition duration-200"
-                            />
-                        </div>
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-text-title mb-2">
+                                        Tour Type
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={tourType}
+                                        onChange={(e) => setTourType(e.target.value)}
+                                        placeholder="Enter tour Type"
+                                        className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+                                            border border-neutral-line 
+                                            text-text-body bg-white
+                                            placeholder:text-gray-400
+                                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                            transition duration-200"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-text-title mb-2">
+                                        Facalites
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={facalites}
+                                        onChange={(e) => setFacalites(e.target.value)}
+                                        placeholder="Facalites"
+                                        className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+                                            border border-neutral-line 
+                                            text-text-body bg-white
+                                            placeholder:text-gray-400
+                                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                            transition duration-200"
+                                    />
+                                </div>
+                            </div>
                             {/* Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {Object.keys(details).map((key) => (
@@ -261,26 +299,18 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                     </div>
                                 ))}
                             </div>
-                                   {/* Category / Subcategory / Place */}
+                            {/* Category / Subcategory / Place */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <Dropdown
-                                    label="Category"
-                                    items={categorys?.data}
-                                    selected={selectedCategory}
-                                    setSelected={setSelectedCategory}
-                                    open={dropdownOpen.category}
-                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, category: open })}
+                                    label="Country"
+                                    items={country?.data}
+                                    selected={selectedCountry}
+                                    setSelected={setselectedCountry}
+                                    open={dropdownOpen.country}
+                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, country: open })}
                                 />
                                 <Dropdown
-                                    label="Sub Category"
-                                    items={subCategorys?.data}
-                                    selected={selectedSubCategory}
-                                    setSelected={setSelectedSubCategory}
-                                    open={dropdownOpen.subcategory}
-                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, subcategory: open })}
-                                />
-                                <Dropdown
-                                    label="Place"
+                                    label="Destination"
                                     items={newPlace?.data}
                                     selected={selectedPlace}
                                     setSelected={setSelectedPlace}
@@ -418,7 +448,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                 {pricingType === "groupTier" && (
                                     <div className="mt-2 space-y-2">
                                         {groupPrices.map((gp, idx) => (
-                                            <div key={idx+1} className="flex gap-2">
+                                            <div key={idx + 1} className="flex gap-2">
                                                 <input
                                                     type="number"
                                                     value={gp.persons}
@@ -463,7 +493,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                 )}
                             </div>
 
-                         
+
 
                             {/* Submit */}
                             <button

@@ -6,21 +6,21 @@ import { Pencil, Eye, Plus, Trash } from "lucide-react"; // ✅ Added Trash
 import { useUserContext } from "@/context/userContext";
 import useAxiosPost from "@/utils/useAxiosPost";
 import ConfirmModal from "@/app/(dashboard)/component/ConfirmModal";
-import { useCategoryContext } from "@/context/categoryContext";
 import CommonLoader from "@/component/common/CommonLoader";
 import ViewModal from "@/app/(dashboard)/component/ViewModal";
-import CreateCategoryModal from "./component/CreateCategoryModal";
-import EditCategoryModal from "./component/EditCategoryModal";
+import { useCountryContext } from "@/context/countryContext";
+import EditCountryModal from "./component/EditCountryModal";
+import CreateCountryModal from "./component/CreateCountryModal";
 
-export default function CategoryPage() {
-  const { categorys, categorysLoading, setReload } = useCategoryContext();
+export default function CountryPage() {
+  const {country,setReload, countryLoading } = useCountryContext();
   const { user } = useUserContext();
   const [, updateApproved] = useAxiosPost({}, "patch");
   const [, deleteProject] = useAxiosPost({}, "patch");
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
-  const [editCategoryModalOpen, setEditCategoryModalOpen] = useState(false);
+  const [createCountryModalOpen, setCreateCountryModalOpen] = useState(false);
+  const [editCountryModalOpen, setEditCountryModalOpen] = useState(false);
   const [showView, setShowView] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [actionType, setActionType] = useState(null);
@@ -34,7 +34,7 @@ export default function CategoryPage() {
   const confirmAction = () => {
 
     deleteProject(
-      `http://localhost:3000/api/v1/categories/delete/${selectedId}`,
+      `http://localhost:3000/api/v1/country/delete/${selectedId}`,
       { user: { _id: user?._id } },
       () => {
         setReload(prev => !prev);
@@ -45,19 +45,19 @@ export default function CategoryPage() {
 
   };
 
-  if (categorysLoading) return <CommonLoader />;
+  if (countryLoading) return <CommonLoader />;
 
   return (
     <div className="min-h-screen bg-neutral-background text-text-body p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-text-title">Categories</h1>
+          <h1 className="text-3xl font-bold text-text-title">Country</h1>
           <button
-            onClick={() => setCreateCategoryModalOpen(true)}
+            onClick={() => setCreateCountryModalOpen(true)}
             className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white px-5 py-2.5 rounded-lg shadow-md transition-all duration-200"
           >
-            <Plus className="w-5 h-5" /> Add Category
+            <Plus className="w-5 h-5" /> Add Country
           </button>
         </div>
 
@@ -67,28 +67,28 @@ export default function CategoryPage() {
             <thead className="bg-neutral-background text-text-title text-sm">
               <tr>
                 <th className="px-6 py-3 text-left font-semibold">Sl</th>
-                <th className="px-6 py-3 text-left font-semibold">Category</th>
+                <th className="px-6 py-3 text-left font-semibold">Country</th>
                 <th className="px-6 py-3 text-center font-semibold">Actions</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-neutral-line">
-              {categorys?.data?.map((category, i) => (
+              {country?.data?.map((Country, i) => (
                 <tr
-                  key={category?._id}
+                  key={Country?._id}
                   className="hover:bg-neutral-background/60 transition-colors"
                 >
                   <td className="px-6 py-4 font-medium text-text-body">
                     {i + 1}
                   </td>
                   <td className="px-6 py-4 font-medium text-text-body">
-                    {category?.name}
+                    {Country?.name}
                   </td>
                   <td className="px-6 py-4 text-center space-x-2">
                     {/* View */}
                     <button
                       onClick={() => {
-                        setShowView(category)
+                        setShowView(Country)
                       }}
                       className="inline-flex items-center justify-center bg-accent-teal hover:bg-brand-secondary text-white rounded-md p-2 transition"
                     >
@@ -98,7 +98,7 @@ export default function CategoryPage() {
                     {/* Edit */}
                     <button
                       onClick={() => {
-                        setEditCategoryModalOpen(category);
+                        setEditCountryModalOpen(Country);
                       }}
                       className="inline-flex items-center justify-center bg-accent-yellow hover:bg-brand-primary text-text-title font-semibold rounded-md p-2 transition"
                     >
@@ -107,7 +107,7 @@ export default function CategoryPage() {
 
                     {/* Delete */}
                     <button
-                      onClick={() => handleReject(category?._id)}
+                      onClick={() => handleReject(Country?._id)}
                       className="inline-flex items-center justify-center bg-accent-pink hover:bg-brand-secondary text-white rounded-md p-2 transition"
                     >
                       <Trash size={18} />
@@ -116,7 +116,7 @@ export default function CategoryPage() {
                 </tr>
               ))}
 
-              {categorys?.data?.length === 0 && (
+              {country?.data?.length === 0 && (
                 <tr>
                   <td
                     colSpan={5}
@@ -131,23 +131,23 @@ export default function CategoryPage() {
         </div>
       </div>
 
-      <EditCategoryModal
-        open={editCategoryModalOpen}
-        category={editCategoryModalOpen}
-        onClose={() => setEditCategoryModalOpen(false)}
-        onSuccess={() => setReload(prev => !prev)} // refresh list after edit
+      <EditCountryModal
+        open={editCountryModalOpen}
+        country={editCountryModalOpen}
+        onClose={() => setEditCountryModalOpen(false)}
+        onSuccess={() => setReload(prev => !prev)}
       />
 
-      <CreateCategoryModal
-        open={createCategoryModalOpen}
-        onClose={() => setCreateCategoryModalOpen(false)}
-        onSuccess={() => setReload(prev => !prev)} // Refresh category list on success
+      <CreateCountryModal
+        open={createCountryModalOpen}
+        onClose={() => setCreateCountryModalOpen(false)}
+        onSuccess={() => setReload(prev => !prev)}
       />
 
       <ViewModal
         open={showView}
         onClose={() => setShowView(false)}
-        title="Category Details"
+        title="Country Details"
         data={{
           name: showView?.name,
           createdAt: showView?.createdAt,

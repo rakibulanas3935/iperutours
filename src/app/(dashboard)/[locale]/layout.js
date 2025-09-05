@@ -7,6 +7,7 @@ import { CategoryProvider } from "@/context/categoryContext";
 import { SubCategoryProvider } from "@/context/subCategoryContext";
 import { NewPlaceProvider } from "@/context/newPlaceContext";
 import { TourProvider } from "@/context/tourContext";
+import { CountryProvider } from "@/context/countryContext";
 
 
 
@@ -29,6 +30,7 @@ export default function DashboardLayout({ children }) {
   return (
     <html lang="en">
       <UserProvider>
+        <CountryProvider>
         <TourProvider>
         <NewPlaceProvider>
         <CategoryProvider>
@@ -48,6 +50,7 @@ export default function DashboardLayout({ children }) {
         </CategoryProvider>
         </NewPlaceProvider>
         </TourProvider>
+        </CountryProvider>
       </UserProvider>
     </html>
   );

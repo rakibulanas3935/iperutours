@@ -1,6 +1,8 @@
 "use client";
 
+import CartPage from "@/component/common/CartPage";
 import CommonLoader from "@/component/common/CommonLoader";
+import MultiStepCheckout from "@/component/common/MultiStepCheckout";
 import PopularDestinations from "@/component/common/PopularDestinations";
 import TopBookedActivities from "@/component/common/TopBookedActivities";
 import TravelersAlsoBooked from "@/component/common/TravelersAlsoBooked";
@@ -71,6 +73,8 @@ export default function HeroSection() {
         </motion.div>
       </div>
     </section>
+    {/* <MultiStepCheckout/> */}
+    {/* <CartPage/> */}
      <PopularDestinations/>
      <TopBookedActivities/>
      <TravelersAlsoBooked/>
