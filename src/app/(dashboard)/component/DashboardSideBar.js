@@ -60,7 +60,7 @@ const DashboardSidebar = () => {
             isAdmin: false,
         },
         {
-            name: "Order",
+            name: "Booking",
             value: "order",
             route: "/dashboard/order",
             icon: Users,

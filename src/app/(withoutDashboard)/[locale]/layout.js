@@ -15,6 +15,7 @@ import { ActiveMenuProvider } from '@/context/activeMenuContext';
 import { ToastContainer } from 'react-toastify';
 import { CountryProvider } from '@/context/countryContext';
 import { CartProvider } from '@/context/cartContext';
+import { BookingProvider } from '@/context/bookingContext';
 
 
 
@@ -47,11 +48,13 @@ export default async function LocaleLayout({
             <NewPlaceProvider>
             <CategoryProvider>
               <SubCategoryProvider>
+                <BookingProvider>
                 <Header />
                 {children}
                 <Footer/>
 
                  <ToastContainer />
+                 </BookingProvider>
               </SubCategoryProvider>
             </CategoryProvider>
             </NewPlaceProvider>

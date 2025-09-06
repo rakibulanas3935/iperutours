@@ -58,7 +58,7 @@ export default function BookingCalculator({data,setPeople,people,setCounts,count
     const service = services.find((s) => s.id === id);
     return sum + (service ? service.price : 0);
   }, 0);
-  setTotal(basePrice + servicesTotal);
+  // setTotal(basePrice + servicesTotal);
 
   return (
     <div className="max-w-sm mx-auto space-y-4">
