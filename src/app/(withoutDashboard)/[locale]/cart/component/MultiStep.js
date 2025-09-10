@@ -7,9 +7,8 @@ import CartWithReview from "./CartWithReview";
 import CheckoutMultiPage from "@/component/common/MultiStepCheckout";
 
 const steps = [
-  { id: 1, name: "Add Tour" },
-  { id: 2, name: "Cart" },
-  { id: 3, name: "CheckOut" },
+  { id: 1, name: "Cart" },
+  { id: 2, name: "CheckOut" },
 ];
 
 export default function CheckoutPage() {

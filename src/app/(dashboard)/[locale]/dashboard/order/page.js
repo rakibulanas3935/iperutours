@@ -11,7 +11,7 @@ import { useUserContext } from "@/context/userContext";
 
 export default function OrderPage() {
   const { setReload, booking } = useBookingContext();
-  const {user}=useUserContext()
+  const { user } = useUserContext()
   const [showView, setShowView] = useState(null);
   const [showReview, setShowReview] = useState(null);
   const [rating, setRating] = useState(0);
@@ -44,14 +44,14 @@ export default function OrderPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:3000/api/v1/reviews/${showReview.tour._id}`,
+        `http://localhost:3000/api/v1/reviews/${showReview?.tour._id}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify({ rating, comment ,userId:user?._id }),
+          body: JSON.stringify({ rating, comment, userId: user?._id }),
         }
       );
       const data = await res.json();
@@ -69,12 +69,12 @@ export default function OrderPage() {
     setLoading(false);
   };
 
-  console.log("user",user)
+  console.log("user", user)
   return (
     <div className="min-h-screen bg-neutral-100 text-gray-800 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">📦 All Orders</h1>
+          <h1 className="text-3xl font-bold text-gray-900">📦 All Bookings</h1>
         </div>
 
         {/* Table */}
@@ -102,27 +102,29 @@ export default function OrderPage() {
                   <td className="px-6 py-4 font-medium">{order?.paymentStatus}</td>
                   <td className="px-6 py-4">
                     <span
-                      className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                        order?.bookingStatus === "pending"
+                      className={`px-3 py-1 text-xs font-semibold rounded-full ${order?.bookingStatus === "pending"
                           ? "bg-yellow-100 text-yellow-700"
                           : order?.bookingStatus === "confirmed"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-200 text-gray-700"
-                      }`}
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-200 text-gray-700"
+                        }`}
                     >
                       {order?.bookingStatus}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center flex items-center justify-center gap-3">
-                    <select
-                      value={order.status}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                      className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-sm shadow-sm hover:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none transition"
-                    >
-                      <option value="inactive">Inactive</option>
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirm</option>
-                    </select>
+                    {
+                      user?.role === "admin" && <select
+                        value={order.status}
+                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                        className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-sm shadow-sm hover:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none transition"
+                      >
+                        <option value="inactive">Inactive</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirm</option>
+                      </select>
+                    }
+
 
                     <button
                       onClick={() => setShowView(order)}
@@ -190,9 +192,8 @@ export default function OrderPage() {
                 <Star
                   key={star}
                   size={32}
-                  className={`cursor-pointer ${
-                    rating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-400"
-                  }`}
+                  className={`cursor-pointer ${rating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-400"
+                    }`}
                   onClick={() => setRating(star)}
                 />
               ))}

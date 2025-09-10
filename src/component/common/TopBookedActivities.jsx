@@ -68,7 +68,7 @@ export default function TopBookedActivities() {
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 				{tours?.data?.map((tour, i) => (
-					<Link href={`/tour/${tour?._id}`}>
+					<Link href={`/tour/${tour?._id}`} key={i + 1}>
 						<motion.div
 							key={tour?._id}
 							initial={{ opacity: 0, y: 50 }}
@@ -91,7 +91,7 @@ export default function TopBookedActivities() {
 							{/* Badge */}
 
 							<div className="absolute top-36 right-2 bg-pink-600 text-white text-xs px-2 py-1 rounded">
-								Breakfast + Lunch
+								{tour?.facalites}
 							</div>
 
 							{/* Content */}
@@ -104,12 +104,44 @@ export default function TopBookedActivities() {
 
 								{/* Rating */}
 								<div className="flex items-center gap-1 mt-2">
-									<span className="text-yellow-400">★★★★★</span>
-									<span className="text-sm text-gray-600">5 (9)</span>
+									<div className="flex flex-col items-center md:items-start">
+										{(() => {
+											const reviews = tour?.reviews;
+											const avg =
+												reviews.length === 0
+													? 0
+													: reviews.reduce((sum, r) => sum + r.rating, 0) /
+													  reviews.length;
+											const roundedAvg = Math.round(avg * 10) / 10;
+											return (
+												<div className="flex items-center gap-2">
+													
+													<div className="flex ">
+														{Array.from({ length: 5 }).map((_, i) => (
+															<span
+																key={i}
+																className={`${
+																	i < Math.floor(roundedAvg)
+																		? "text-yellow-400"
+																		: "text-gray-300"
+																}`}
+															>
+																★
+															</span>
+														))}
+													</div>
+													<span className="text-sm text-gray-600">
+														{roundedAvg} ({tour?.reviews?.length})
+													</span>
+												</div>
+											);
+										})()}
+									</div>
+									{/* <span className="text-yellow-400">★★★★★</span> */}
 								</div>
 
 								{/* Recent bookings */}
-								<p className="text-sm text-orange-600 mt-1">2 recent booking</p>
+								<p className="text-sm text-orange-600 mt-1">{tour?.bookingCount || 0} recent booking</p>
 
 								{/* Duration */}
 								<div className="flex items-center text-sm text-gray-600 mt-2">
@@ -118,7 +150,10 @@ export default function TopBookedActivities() {
 
 								{/* Price */}
 								<div className="mt-3 font-bold text-right text-gray-800">
-									From: <span className="text-black">12</span>
+									USD{" "}
+									<span className="text-black">
+										{tour?.pricing?.perPersonPrice || 45}
+									</span>
 								</div>
 							</div>
 						</motion.div>

@@ -6,6 +6,7 @@ import useAxiosPost from "@/utils/useAxiosPost";
 import { useUserContext } from "@/context/userContext";
 import { toast } from "react-toastify";
 import { useCartContext } from "@/context/cartContext";
+import useAxiosGet from "@/utils/useAxiosGet";
 
 export default function CheckoutMultiPage() {
   const [countries, setCountries] = useState([]);
@@ -18,7 +19,11 @@ export default function CheckoutMultiPage() {
   const { user, setReload } = useUserContext();
   const [, postUserinfo, postUserLoading] = useAxiosPost();
   const [, postBooking, postBookingLoading] = useAxiosPost();
+  const [selectedCode, setSelectedCode] = useState("+880");
+  const [countryCode, GetCountryCode, countryCodeLoading, setCountryCode] = useAxiosGet()
   const basePrice = cartItem.reduce((sum, item) => sum + item.totalPrice, 0);
+  const [paymentOption, setPaymentOption] = useState("50");
+
   // Fetch countries and states/districts
   useEffect(() => {
     fetch("https://countriesnow.space/api/v0.1/countries/states")
@@ -33,6 +38,11 @@ export default function CheckoutMultiPage() {
       .catch((err) => console.error(err));
   }, []);
 
+  useEffect(() => {
+    GetCountryCode("https://countriesnow.space/api/v0.1/countries/codes", (res) => {
+      setCountryCode(res)
+    })
+  }, [])
   // Update districts when country changes
   useEffect(() => {
     const countryData = countries.find((c) => c.country === selectedCountry);
@@ -123,7 +133,7 @@ export default function CheckoutMultiPage() {
           userId: user._id,
           travelDate: item.selectedDate,
           numberOfPeople: item.numberOfPeople,
-          specialRequest: "", 
+          specialRequest: "",
         };
 
         postBooking(
@@ -131,7 +141,7 @@ export default function CheckoutMultiPage() {
           payload,
           (res) => {
             if (res?.status === "success") {
-              localStorage.removeItem("cart"); 
+              localStorage.removeItem("cart");
               reloadCart()
             } else {
               toast.error(`Booking failed for ${item.tour.title}`);
@@ -146,13 +156,14 @@ export default function CheckoutMultiPage() {
     }
   };
 
+  console.log("countryCode", countryCode)
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col py-10">
       <div className="flex flex-col lg:flex-row max-w-6xl mx-auto gap-6 px-4">
         {/* Left side: Contact form */}
         {
-          user ? <></> : <form
+          user ? null : <form
             className="flex-1 bg-white border border-gray-200 rounded-xl p-6 shadow-md"
             onSubmit={handleRegister}
           >
@@ -201,16 +212,36 @@ export default function CheckoutMultiPage() {
               ))}
             </select>
 
-            <input
-              name="whatsApp"
-              placeholder="WhatsApp (optional)"
-              className="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition w-full mt-4"
-            />
-            <input
+            <div className="flex mt-4 gap-2">
+              {/* Country Code Dropdown */}
+              <select
+                className="p-2 border border-gray-300 rounded-lg bg-white 
+                   focus:ring-2 focus:ring-green-400 focus:border-transparent 
+                   outline-none transition w-32"
+                value={selectedCode}
+                onChange={(e) => setSelectedCode(e.target.value)}
+              >
+                {countryCode?.data?.map((c) => (
+                  <option key={c?.code} value={c?.dial_code}>
+                    {c?.name} {c?.dial_code}
+                  </option>
+                ))}
+              </select>
+
+              {/* WhatsApp Number */}
+              <input
+                name="whatsApp"
+                placeholder="WhatsApp Number"
+                className="flex-1 border border-gray-300 p-2 rounded-lg 
+                   focus:ring-2 focus:ring-green-400 focus:border-transparent 
+                   outline-none transition"
+              />
+            </div>
+            {/* <input
               name="userName"
               placeholder="User Name *"
               className="border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-green-400 focus:border-transparent outline-none transition w-full mt-4"
-            />
+            /> */}
             <input
               name="email"
               placeholder="Email Address *"
@@ -234,7 +265,7 @@ export default function CheckoutMultiPage() {
               </button>
             </div>
 
-            <div className="relative mt-4">
+            {/* <div className="relative mt-4">
               <input
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
@@ -248,7 +279,7 @@ export default function CheckoutMultiPage() {
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
-            </div>
+            </div> */}
 
             <h3 className="font-medium mt-6 text-gray-700">Additional Information</h3>
             <textarea
@@ -268,7 +299,7 @@ export default function CheckoutMultiPage() {
 
 
         {/* Right side: Reservation + Payment */}
-        <div className="w-full space-y-6">
+        <div className={`${user ? "w-full" : "w-auto"} space-y-6`}>
           {cartItem.length === 0 && (
             <p className="text-center text-gray-500">Your cart is empty.</p>
           )}
@@ -304,44 +335,100 @@ export default function CheckoutMultiPage() {
           {/* Payment Section */}
           {cartItem.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-md">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800">Credit or Debit Card</h2>
-              <input
-                placeholder="Card Number"
-                className="border border-gray-300 p-2 rounded-lg w-full mb-2"
-              />
-              <div className="flex gap-2 mb-2">
-                <input
-                  placeholder="MM/YY"
-                  className="border border-gray-300 p-2 rounded-lg w-1/2"
-                />
-                <input
-                  placeholder="CVV"
-                  className="border border-gray-300 p-2 rounded-lg w-1/2"
-                />
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">Payment Options</h2>
+
+              {/* Payment Options */}
+              <div className="space-y-2 mb-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="paymentOption"
+                    value="50"
+                    defaultChecked
+                    onChange={() => setPaymentOption("50")}
+                  />
+                  <span className="text-sm text-gray-700">Pay 50% now (US${(basePrice / 2).toFixed(2)})</span>
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="paymentOption"
+                    value="full"
+                    onChange={() => setPaymentOption("full")}
+                  />
+                  <span className="text-sm text-gray-700">Pay full amount now (US${basePrice})</span>
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="paymentOption"
+                    value="later"
+                    onChange={() => setPaymentOption("later")}
+                  />
+                  <span className="text-sm text-gray-700">Pay later (Reserve without payment)</span>
+                </label>
               </div>
-              <input
-                placeholder="Card Holder Name"
-                className="border border-gray-300 p-2 rounded-lg w-full mb-2"
-              />
-              <input
-                placeholder="Email"
-                className="border border-gray-300 p-2 rounded-lg w-full mb-2"
-              />
+
+              {/* Card Fields - hide if Pay Later */}
+              {paymentOption !== "later" && (
+                <>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">Credit or Debit Card</h3>
+                  <input
+                    placeholder="Card Number"
+                    className="border border-gray-300 p-2 rounded-lg w-full mb-2"
+                  />
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      placeholder="MM/YY"
+                      className="border border-gray-300 p-2 rounded-lg w-1/2"
+                    />
+                    <input
+                      placeholder="CVV"
+                      className="border border-gray-300 p-2 rounded-lg w-1/2"
+                    />
+                  </div>
+                  <input
+                    placeholder="Card Holder Name"
+                    className="border border-gray-300 p-2 rounded-lg w-full mb-2"
+                  />
+                  <input
+                    placeholder="Email"
+                    className="border border-gray-300 p-2 rounded-lg w-full mb-2"
+                  />
+                </>
+              )}
+
+              {/* Terms */}
               <div className="flex items-start mt-2">
                 <input type="checkbox" className="mt-1" />
                 <p className="text-xs ml-2 text-gray-600">
                   I agree to the <span className="text-green-600">terms and conditions</span>.
                 </p>
               </div>
+
+              {/* Total */}
               <div className="flex justify-between mt-4 text-lg font-bold">
-                <span>Total</span>
-                <span>US${basePrice}</span>
+                <span>Total to Pay</span>
+                <span>
+                  {paymentOption === "50"
+                    ? `US$${(basePrice / 2).toFixed(2)}`
+                    : paymentOption === "full"
+                      ? `US$${basePrice}`
+                      : "US$0"}
+                </span>
               </div>
-              <button className="mt-4 bg-green-600 cursor-pointer hover:bg-green-700 text-white w-full py-3 rounded-xl font-semibold transition" onClick={handleBooking}>
-                PLACE BOOKING
+
+              <button
+                className="mt-4 bg-green-600 cursor-pointer hover:bg-green-700 text-white w-full py-3 rounded-xl font-semibold transition"
+                onClick={handleBooking}
+              >
+                {paymentOption === "later" ? "RESERVE NOW" : "PLACE BOOKING"}
               </button>
             </div>
           )}
+
         </div>
       </div>
     </div>

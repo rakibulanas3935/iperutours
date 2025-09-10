@@ -16,6 +16,7 @@ import { ToastContainer } from 'react-toastify';
 import { CountryProvider } from '@/context/countryContext';
 import { CartProvider } from '@/context/cartContext';
 import { BookingProvider } from '@/context/bookingContext';
+import { DestinationWiseTourProvider } from '@/context/destinationWiseTourContext';
 
 
 
@@ -43,6 +44,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider>
           <UserProvider>
             <CartProvider>
+              <DestinationWiseTourProvider>
             <CountryProvider>
             <TourProvider>
             <NewPlaceProvider>
@@ -60,6 +62,7 @@ export default async function LocaleLayout({
             </NewPlaceProvider>
             </TourProvider>
             </CountryProvider>
+            </DestinationWiseTourProvider>
             </CartProvider>
           </UserProvider>
         </NextIntlClientProvider>

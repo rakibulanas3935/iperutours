@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import CommonLoader from "@/component/common/CommonLoader";
 import { useUserContext } from "@/context/userContext";
 import Image from "next/image";
 
@@ -36,28 +35,28 @@ const DashboardSidebar = () => {
             value: "country",
             route: "/dashboard/country",
             icon: Users,
-            isAdmin: false,
+            isAdmin: true,
         },
         {
             name: "Destination",
             value: "destination",
             route: "/dashboard/destination",
             icon: Users,
-            isAdmin: false,
+            isAdmin: true,
         },
         {
             name: "Tour Type",
             value: "tourType",
             route: "/dashboard/tourType",
             icon: Users,
-            isAdmin: false,
+            isAdmin: true,
         },
         {
             name: "Add Tours",
             value: "add-tours",
             route: "/dashboard/add-tours",
             icon: Users,
-            isAdmin: false,
+            isAdmin: true,
         },
         {
             name: "Booking",

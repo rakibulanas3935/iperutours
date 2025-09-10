@@ -24,7 +24,7 @@ export default function SacredValleyTrip() {
     const { id } = useParams();
     const router = useRouter();
     const [tourDetails, getTourDetails, tourDetailsLoading] = useAxiosGet([]);
-    const {reloadCart}=useCartContext()
+    const { reloadCart } = useCartContext()
     const [counts, setCounts] = useState({ adult: 1, child: 0, infant: 0 });
     const [people, setPeople] = useState(1);
     const [total, setTotal] = useState(0)
@@ -54,7 +54,7 @@ export default function SacredValleyTrip() {
         router.push('/cart');
     };
 
-    console.log("tourDetails",tourDetails)
+    console.log("tourDetails", tourDetails)
     return (
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
             {/* Left Column */}
@@ -64,11 +64,11 @@ export default function SacredValleyTrip() {
 
                 <div className="mb-6">
                     <h1 className="text-3xl font-extrabold text-gray-900">
-                        {tourDetails?.title || 'Complete Sacred Valley Day Trip'}
+                        {tourDetails?.data?.title}
                     </h1>
                     <div className="flex items-center gap-2 mt-2 text-red-600 font-medium text-sm">
                         <MapPin size={16} />
-                        {tourDetails?.location || 'Cusco, Peru'}
+                        {tourDetails?.data?.place?.placeName} , {tourDetails?.data?.country?.name}
                     </div>
                     <div className="flex items-center gap-3 mt-2 text-sm">
                         <span className="text-green-600 font-semibold">
@@ -76,7 +76,7 @@ export default function SacredValleyTrip() {
                         </span>
                         <span className="text-yellow-500">★★★★★</span>
                         <span className="text-gray-500">
-                            ({tourDetails?.reviews || 8} reviews)
+                            ({tourDetails?.data?.reviews.length || 8} reviews)
                         </span>
                     </div>
                     {/* <div className="mt-4 text-gray-500 text-sm">
@@ -128,7 +128,7 @@ export default function SacredValleyTrip() {
                     )}
                 </motion.div>
 
-                <PageNavigation title={tourDetails?.data?.place?.placeName} />
+                <PageNavigation destination={tourDetails?.data?.place?.placeName} country={tourDetails?.data?.country?.name} title={tourDetails?.data?.title} />
                 {/* Thumbnails */}
                 {/* <div className="flex mt-4 gap-3 overflow-x-auto">
                         {images.map((img, index) => (
@@ -159,7 +159,7 @@ export default function SacredValleyTrip() {
                 >
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-bold text-green-600">
-                            ${tourDetails?.price || '24.00'}
+                            ${tourDetails?.data?.pricing?.basePrice}
                         </h2>
                         <span className="text-yellow-500">★★★★★</span>
                     </div>
@@ -218,7 +218,9 @@ export default function SacredValleyTrip() {
                     <div className="mt-4 mb-4">
                         <label className="font-medium text-gray-700">Duration</label>
                         <div className="w-full border rounded-lg p-2 bg-gray-50 text-gray-700 text-sm">
-                            {tourDetails?.duration || '11 hours'}
+                            {Number(tourDetails?.data?.details?.duration) < 24
+                                ? `${tourDetails?.data?.details?.duration} hours`
+                                : `${Math.floor(Number(tourDetails?.data?.details?.duration) / 24)} days`}
                         </div>
                     </div>
 

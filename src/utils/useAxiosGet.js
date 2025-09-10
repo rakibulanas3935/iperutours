@@ -44,6 +44,7 @@ const useAxiosGet = (initialValue) => {
         setLoading(false);
       })
       .catch((err) => {
+        console.log(err)
         setRes(initialValue || []);
         if (errorCb && typeof errorCb === "function") {
           errorCb(err);

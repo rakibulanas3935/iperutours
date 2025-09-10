@@ -13,7 +13,7 @@ const CartPage = () => {
     removeFromCart(tourId, selectedDate);
     reloadCart(); // Update context
   };
-
+  console.log(cartItem)
   return (
     <div className="bg-gray-50 p-4 rounded-md shadow">
       {/* Table Header */}
@@ -67,7 +67,7 @@ const CartPage = () => {
             </h3>
             <p>
               <span className="font-semibold">Date:</span>{" "}
-              {new Date(item.selectedDate).toLocaleDateString()}
+              {new Date(item.bookingDate).toLocaleDateString()}
             </p>
             <p>
               <span className="font-semibold">Duration:</span>{" "}

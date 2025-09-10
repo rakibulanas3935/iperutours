@@ -26,6 +26,26 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
         guide: "",
         fitnessLevel: "",
     });
+    const [basePrice, setBasePrice] = useState(0)
+    // ✅ State
+    const [extraPrices, setExtraPrices] = useState([{ name: "", price: "" }]);
+
+    // ✅ Handlers
+    const handleExtraPriceChange = (index, field, value) => {
+        const updated = [...extraPrices];
+        updated[index][field] = value;
+        setExtraPrices(updated);
+    };
+
+    const addExtraPriceRow = () => {
+        setExtraPrices([...extraPrices, { name: "", price: "" }]);
+    };
+
+    const removeExtraPriceRow = (index) => {
+        const updated = [...extraPrices];
+        updated.splice(index, 1);
+        setExtraPrices(updated);
+    };
     const [description, setDescription] = useState("");
     const [included, setIncluded] = useState([]);
     const [excluded, setExcluded] = useState([]);
@@ -92,79 +112,96 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
         setGroupPrices(groupPrices.filter((_, i) => i !== index));
 
     // Submit form
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (
-            !title ||
-            !description ||
-            !selectedCountry ||
-            !selectedPlace ||
-            images.length === 0
-        ) {
-            toast.warn("Please fill all required fields and select images");
-            return;
-        }
+   const handleSubmit = async (e) => {
+  e.preventDefault();
 
-        setUploading(true);
-        try {
-            const formData = new FormData();
-            images.forEach((file) => formData.append("images", file));
+  if (
+    !title ||
+    !description ||
+    !selectedCountry ||
+    !selectedPlace ||
+    images.length === 0 ||
+    !basePrice // ✅ validate base price
+  ) {
+    toast.warn("Please fill all required fields, select images, and enter base price");
+    return;
+  }
 
-            const uploadRes = await axios.post(
-                "http://localhost:3000/api/v1/all/upload-images",
-                formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
+  setUploading(true);
+  try {
+    const formData = new FormData();
+    images.forEach((file) => formData.append("images", file));
 
-            const uploadedImages = uploadRes.data.urls;
-            console.log('uploadedImages', uploadedImages)
-            const tourData = {
-                title,
-                details,
-                description,
-                tourType,
-                included,
-                excluded,
-                whatToBring,
-                images: uploadedImages,
-                pricing: {
-                    type: pricingType,
-                    perPersonPrice: pricingType === "perPerson" ? perPersonPrice : undefined,
-                    groupPrices: pricingType === "groupTier" ? groupPrices : [],
-                },
-                country: selectedCountry?._id,
-                place: selectedPlace?._id,
-            };
+    const uploadRes = await axios.post(
+      "http://localhost:3000/api/v1/all/upload-images",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
 
-            createTour("http://localhost:3000/api/v1/tours", tourData, (data) => {
-                if (data?.status === "success") {
-                    if (onSuccess) onSuccess();
-                    onClose();
-                }
-            }, true);
-            // toast.success("Tour added successfully!");
+    const uploadedImages = uploadRes.data.urls;
+    console.log("uploadedImages", uploadedImages);
 
-            // Reset form
-            setTitle("");
-            setDetails({ duration: "", schedule: "", meetingPoint: "", guide: "", fitnessLevel: "" });
-            setDescription("");
-            setIncluded([]);
-            setExcluded([]);
-            setWhatToBring([]);
-            setImages([]);
-            setImagePreviews([]);
-            setPerPersonPrice("");
-            setGroupPrices([{ persons: "", price: "" }]);
-            setselectedCountry(null);
-            setSelectedSubCategory(null);
-            setSelectedPlace(null);
-        } catch (err) {
-            console.log(err);
-            alert("Error adding tour");
-        } finally {
-            setUploading(false);
-        }
+    const tourData = {
+      title,
+      details,
+      description,
+      tourType,
+      included,
+      excluded,
+      whatToBring,
+      images: uploadedImages,
+      pricing: {
+        type: pricingType,
+        basePrice: basePrice, // ✅ new field
+        perPersonPrice: pricingType === "perPerson" ? perPersonPrice : undefined,
+        groupPrices: pricingType === "groupTier" ? groupPrices : [],
+        extraPrices: extraPrices.filter(ep => ep.name && ep.price), // ✅ include extra prices if filled
+      },
+      country: selectedCountry?._id,
+      place: selectedPlace?._id,
     };
+
+    createTour(
+      "http://localhost:3000/api/v1/tours",
+      tourData,
+      (data) => {
+        if (data?.status === "success") {
+          if (onSuccess) onSuccess();
+          onClose();
+        }
+      },
+      true
+    );
+
+    // Reset form
+    setTitle("");
+    setDetails({
+      duration: "",
+      schedule: "",
+      meetingPoint: "",
+      guide: "",
+      fitnessLevel: "",
+    });
+    setDescription("");
+    setIncluded([]);
+    setExcluded([]);
+    setWhatToBring([]);
+    setImages([]);
+    setImagePreviews([]);
+    setPerPersonPrice("");
+    setGroupPrices([{ persons: "", price: "" }]);
+    setExtraPrices([{ name: "", price: "" }]); // ✅ reset extra prices
+    setBasePrice(""); // ✅ reset base price
+    setselectedCountry(null);
+    setSelectedSubCategory(null);
+    setSelectedPlace(null);
+  } catch (err) {
+    console.log(err);
+    toast.warn("Error adding tour");
+  } finally {
+    setUploading(false);
+  }
+};
 
 
     // Dropdown component
@@ -406,7 +443,9 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
 
                             {/* Pricing */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pricing Type</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Pricing Type
+                                </label>
                                 <div className="flex gap-4">
                                     <label className="flex text-black items-center gap-2">
                                         <input
@@ -430,36 +469,64 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                     </label>
                                 </div>
 
-                                {pricingType === "perPerson" && (
+                                {/* ✅ Common Base Price - Always Shown */}
+                                <div className="mt-3">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Base Price
+                                    </label>
                                     <input
                                         type="number"
-                                        value={perPersonPrice}
-                                        onChange={(e) => setPerPersonPrice(e.target.value)}
-                                        placeholder="Enter price per person"
+                                        value={basePrice}
+                                        onChange={(e) => setBasePrice(e.target.value)}
+                                        placeholder="Enter base price"
                                         className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                                        border border-neutral-line 
-                                        text-text-body bg-white
-                                        placeholder:text-gray-400
-                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                        transition duration-200"
+        border border-neutral-line 
+        text-text-body bg-white
+        placeholder:text-gray-400
+        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+        transition duration-200"
                                     />
+                                </div>
+
+                                {/* ✅ Conditional Pricing */}
+                                {pricingType === "perPerson" && (
+                                    <div className="mt-3">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Price Per Person
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={perPersonPrice}
+                                            onChange={(e) => setPerPersonPrice(e.target.value)}
+                                            placeholder="Enter price per person"
+                                            className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
+          border border-neutral-line 
+          text-text-body bg-white
+          placeholder:text-gray-400
+          focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+          transition duration-200"
+                                        />
+                                    </div>
                                 )}
 
                                 {pricingType === "groupTier" && (
-                                    <div className="mt-2 space-y-2">
+                                    <div className="mt-3 space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Group Tier Prices
+                                        </label>
                                         {groupPrices.map((gp, idx) => (
-                                            <div key={idx + 1} className="flex gap-2">
+                                            <div key={idx} className="flex gap-2">
                                                 <input
                                                     type="number"
                                                     value={gp.persons}
                                                     onChange={(e) => handleGroupPriceChange(idx, "persons", e.target.value)}
                                                     placeholder="Persons"
                                                     className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                                        border border-neutral-line 
-                                        text-text-body bg-white
-                                        placeholder:text-gray-400
-                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                        transition duration-200"
+              border border-neutral-line 
+              text-text-body bg-white
+              placeholder:text-gray-400
+              focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+              transition duration-200"
                                                 />
                                                 <input
                                                     type="number"
@@ -467,11 +534,11 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                                     onChange={(e) => handleGroupPriceChange(idx, "price", e.target.value)}
                                                     placeholder="Price"
                                                     className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                                        border border-neutral-line 
-                                        text-text-body bg-white
-                                        placeholder:text-gray-400
-                                        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                        transition duration-200"
+              border border-neutral-line 
+              text-text-body bg-white
+              placeholder:text-gray-400
+              focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+              transition duration-200"
                                                 />
                                                 <button
                                                     type="button"
@@ -493,6 +560,63 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                 )}
                             </div>
 
+                            <div className="mt-5">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Extra Pricing Options
+                                </label>
+
+                                <div className="space-y-2">
+                                    {extraPrices.map((ep, idx) => (
+                                        <div key={idx} className="flex gap-2">
+                                            {/* Free-text name */}
+                                            <input
+                                                type="text"
+                                                value={ep.name}
+                                                onChange={(e) => handleExtraPriceChange(idx, "name", e.target.value)}
+                                                placeholder="Option Name (e.g. Breakfast)"
+                                                className="flex-1 px-3 py-2 rounded-lg shadow-sm 
+            border border-neutral-line 
+            text-text-body bg-white
+            placeholder:text-gray-400
+            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+            transition duration-200"
+                                            />
+
+                                            {/* Price */}
+                                            <input
+                                                type="number"
+                                                value={ep.price}
+                                                onChange={(e) => handleExtraPriceChange(idx, "price", e.target.value)}
+                                                placeholder="Price"
+                                                className="w-32 px-3 py-2 rounded-lg shadow-sm 
+            border border-neutral-line 
+            text-text-body bg-white
+            placeholder:text-gray-400
+            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+            transition duration-200"
+                                            />
+
+                                            {/* Remove row */}
+                                            <button
+                                                type="button"
+                                                onClick={() => removeExtraPriceRow(idx)}
+                                                className="bg-brand-secondary text-white px-2 rounded-lg hover:bg-red-600"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+
+                                    {/* Add new row */}
+                                    <button
+                                        type="button"
+                                        onClick={addExtraPriceRow}
+                                        className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 mt-2"
+                                    >
+                                        + Add Extra Option
+                                    </button>
+                                </div>
+                            </div>
 
 
                             {/* Submit */}

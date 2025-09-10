@@ -24,7 +24,6 @@ const BookingProvider = ({ children }) => {
         [booking, bookingLoading]
     );
 
-    console.log('booking',booking)
     return (
         <BookingContext.Provider value={BookingContextValue}>
             {children}

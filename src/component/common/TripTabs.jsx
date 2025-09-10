@@ -74,37 +74,36 @@ export default function TripInfo({ data }) {
 				className="mb-12 scroll-mt-28"
 			>
 				<h2 className="text-xl font-bold text-gray-800 mb-4">Details</h2>
-				<p className="text-gray-700 text-sm mb-4">
-					Explore the highlights of the Sacred Valley of the Incas in a single
-					day filled with history, culture, and breathtaking landscapes. This
-					tour takes you on an unforgettable journey through this historically
-					and culturally rich region.
-				</p>
+				<p className="text-gray-700 text-sm mb-4">{data?.details?.info}</p>
 				<div className="space-y-4 text-sm">
 					<div className="flex items-center gap-2">
 						<Clock size={18} className="text-gray-600" />
 						<strong className="w-28 text-gray-700">Duration:</strong>
-						<span>11.5 hours</span>
+						<span>
+							{Number(data?.details?.duration) < 24
+								? `${data?.details?.duration} hours`
+								: `${Math.floor(Number(data?.details?.duration) / 24)} days`}
+						</span>
 					</div>
 					<div className="flex items-center gap-2">
 						<Clock size={18} className="text-gray-600" />
 						<strong className="w-28 text-gray-700">Schedule:</strong>
-						<span>7:00 AM</span>
+						<span>{data?.details?.schedule}</span>
 					</div>
 					<div className="flex items-center gap-2">
 						<MapPin size={18} className="text-gray-600" />
 						<strong className="w-28 text-gray-700">Meeting point:</strong>
-						<span>Pickup at your accommodation</span>
+						<span>{data?.details?.meetingPoint}</span>
 					</div>
 					<div className="flex items-center gap-2">
 						<Languages size={18} className="text-gray-600" />
 						<strong className="w-28 text-gray-700">Guide:</strong>
-						<span>English, Spanish</span>
+						<span>{data?.details?.guide}</span>
 					</div>
 					<div className="flex items-center gap-2">
 						<Dumbbell size={18} className="text-gray-600" />
 						<strong className="w-28 text-gray-700">Fitness level:</strong>
-						<span>Low, Intermediate</span>
+						<span>{data?.details?.fitnessLevel}</span>
 					</div>
 				</div>
 			</motion.section>
@@ -117,10 +116,9 @@ export default function TripInfo({ data }) {
 							Included
 						</h3>
 						<ul className="space-y-1 text-sm">
-							<li>✅ Hotel pickup</li>
-							<li>✅ Transportation</li>
-							<li>✅ Tour guide</li>
-							<li>✅ Buffet lunch</li>
+							{data?.included?.map((item, index) => (
+								<li key={index + 1}>✅ {item}</li>
+							))}
 						</ul>
 					</div>
 					<div>
@@ -128,12 +126,9 @@ export default function TripInfo({ data }) {
 							Excluded
 						</h3>
 						<ul className="space-y-1 text-sm">
-							<li>
-								❌ Tourist Ticket: Foreigners s/70 (US$19), Peruvians s/40
-							</li>
-							<li>
-								❌ Salt Mines of Maras: Foreigners s/20 (US$5.5), Peruvians s/15
-							</li>
+							{data?.excluded?.map((item, index) => (
+								<li key={index + 1}>✅ {item}</li>
+							))}
 						</ul>
 					</div>
 				</div>
@@ -150,10 +145,9 @@ export default function TripInfo({ data }) {
 			<section id="what-to-bring" className="mb-12 scroll-mt-28">
 				<h2 className="text-xl font-bold text-gray-800 mb-3">What to bring</h2>
 				<ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-					<li>Comfortable clothes</li>
-					<li>Walking shoes</li>
-					<li>Water bottle</li>
-					<li>Sunscreen & hat</li>
+					{data?.whatToBring?.map((item, index) => (
+						<li key={index + 1}>{item}</li>
+					))}
 				</ul>
 			</section>
 
@@ -173,54 +167,73 @@ export default function TripInfo({ data }) {
 				</p>
 
 				{/* Average Rating */}
-				<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-6">
-					<div className="flex flex-col items-center md:items-start">
-						<span className="text-4xl font-bold text-gray-800">
-							{5 || 0}
-						</span>
-						<div className="flex items-center mt-1">
-							{Array.from({ length: 5 }).map((_, i) => (
-								<span
-									key={i}
-									className={`text-yellow-400 ${
-										i < Math.round(4|| 0)
-											? ""
-											: "text-gray-300"
-									}`}
-								>
-									★
-								</span>
-							))}
-						</div>
-						<p className="text-gray-500 text-sm mt-1">
-							Based on {data?.reviews?.length || 0} review
-							{data?.reviews?.length !== 1 ? "s" : ""}
-						</p>
-					</div>
-
-					{/* Rating Distribution */}
-					<div className="flex-1 space-y-2">
-						{["Excellent", "Very good", "Average", "Bad", "Worse"].map(
-							(label, idx) => {
-								const percent = data?.ratingStats?.[label.toLowerCase()] || 0;
+				{data?.reviews && data.reviews.length > 0 && (
+					<div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-6">
+						{/* Average Stars */}
+						<div className="flex flex-col items-center md:items-start">
+							{(() => {
+								const reviews = data.reviews;
+								const avg =
+									reviews.length === 0
+										? 0
+										: reviews.reduce((sum, r) => sum + r.rating, 0) /
+										  reviews.length;
+								const roundedAvg = Math.round(avg * 10) / 10;
 								return (
-									<div key={label} className="flex items-center gap-2 text-sm">
-										<span className="w-24 text-gray-700">{label}</span>
-										<div className="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
-											<div
-												className="bg-yellow-400 h-2 rounded-full"
-												style={{ width: `${percent}%` }}
-											/>
-										</div>
-										<span className="w-10 text-gray-600 text-right">
-											{percent}%
+									<>
+										<span className="text-4xl font-bold text-gray-800">
+											{roundedAvg}
 										</span>
-									</div>
+										<div className="flex items-center mt-1">
+											{Array.from({ length: 5 }).map((_, i) => (
+												<span
+													key={i}
+													className={`${
+														i < Math.floor(roundedAvg)
+															? "text-yellow-400"
+															: "text-gray-300"
+													}`}
+												>
+													★
+												</span>
+											))}
+										</div>
+										<p className="text-gray-500 text-sm mt-1">
+											Based on {reviews.length} review
+											{reviews.length !== 1 ? "s" : ""}
+										</p>
+									</>
 								);
-							}
-						)}
+							})()}
+						</div>
+
+						{/* Rating Distribution (optional) */}
+						<div className="flex-1 space-y-2">
+							{["Excellent", "Very good", "Average", "Bad", "Worse"].map(
+								(label) => {
+									const percent = data?.rating?.[label.toLowerCase()] || 0;
+									return (
+										<div
+											key={label}
+											className="flex items-center gap-2 text-sm"
+										>
+											<span className="w-24 text-gray-700">{label}</span>
+											<div className="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
+												<div
+													className="bg-yellow-400 h-2 rounded-full"
+													style={{ width: `${percent}%` }}
+												/>
+											</div>
+											<span className="w-10 text-gray-600 text-right">
+												{percent}%
+											</span>
+										</div>
+									);
+								}
+							)}
+						</div>
 					</div>
-				</div>
+				)}
 
 				{/* Search Reviews */}
 				<input
@@ -233,12 +246,12 @@ export default function TripInfo({ data }) {
 				<div className="space-y-6">
 					{data?.reviews?.map((review) => (
 						<div
-							key={review._id}
+							key={review?._id}
 							className="flex gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200"
 						>
 							{/* Avatar */}
 							<div className="flex items-center justify-center w-12 h-12 bg-gray-300 rounded-full text-white font-bold">
-								{review.userName
+								{review?.user?.firstName
 									?.split(" ")
 									.map((n) => n[0])
 									.join("")
@@ -250,7 +263,7 @@ export default function TripInfo({ data }) {
 								<div className="flex items-center justify-between">
 									<div>
 										<h4 className="font-semibold text-gray-800">
-											{review?.userName || "User"}
+											{review?.user?.firstName || "User"}
 										</h4>
 										<span className="text-xs text-green-600">
 											Verified booking
@@ -265,9 +278,9 @@ export default function TripInfo({ data }) {
 								<div className="flex items-center gap-1 mt-1">
 									{Array.from({ length: 5 }).map((_, i) => (
 										<span
-											key={i}
-											className={`text-yellow-400 ${
-												i < review?.rating ? "" : "text-gray-300"
+											key={i + 1}
+											className={`${
+												i < review?.rating ? "text-yellow-400" : "text-gray-300"
 											}`}
 										>
 											★
@@ -280,7 +293,7 @@ export default function TripInfo({ data }) {
 						</div>
 					))}
 
-					{data?.reviews?.length === 0 && (
+					{(!data?.reviews || data.reviews.length === 0) && (
 						<p className="text-gray-500">
 							No reviews yet. Be the first to review this tour!
 						</p>

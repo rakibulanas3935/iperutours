@@ -3,36 +3,30 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 
-export default function BookingCalculator({data,setPeople,people,setCounts,counts,total,setTotal}) {
-  // Prices
-  const basePricePerPerson = data?.pricing?.perPersonPrice; 
-  const services = [
-    { id: "lunch", name: "Lunch", price: 20 },
-    { id: "sunset", name: "Sunset experience + hotel pickup", price: 40 },
-    { id: "pickup", name: "Hotel pickup", price: 15 },
-  ];
+export default function BookingCalculator({
+  data,
+  setPeople,
+  people,
+  setCounts,
+  counts,
+  total,
+  setTotal,
+}) {
+  const basePricePerPerson = data?.pricing?.basePrice || 0;
 
-  
   const [selectedServices, setSelectedServices] = useState([]);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Track totals locally
+  const [basePrice, setBasePrice] = useState(0);
+  const [servicesTotal, setServicesTotal] = useState(0);
 
   // Update people count when counts change
   useEffect(() => {
     const totalPeople = counts.adult + counts.child + counts.infant;
     setPeople(totalPeople);
-  }, [counts]);
-
-  const handleIncrement = (type) => {
-    setCounts((prev) => ({ ...prev, [type]: prev[type] + 1 }));
-  };
-
-  const handleDecrement = (type) => {
-    setCounts((prev) => ({
-      ...prev,
-      [type]: prev[type] > 0 ? prev[type] - 1 : 0,
-    }));
-  };
+  }, [counts, setPeople]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -45,20 +39,35 @@ export default function BookingCalculator({data,setPeople,people,setCounts,count
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle service toggle
+  // Recalculate totals when people/services change
+  useEffect(() => {
+    const newBasePrice = people * basePricePerPerson;
+    const newServicesTotal = selectedServices.reduce((sum, id) => {
+      const service = data?.pricing?.extraPrices?.find((s) => s?._id === id);
+      return sum + (service ? service.price : 0);
+    }, 0);
+
+    setBasePrice(newBasePrice);
+    setServicesTotal(newServicesTotal);
+    setTotal(newBasePrice + newServicesTotal);
+  }, [people, selectedServices, data?.pricing?.extraPrices, basePricePerPerson, setTotal]);
+
+  const handleIncrement = (type) => {
+    setCounts((prev) => ({ ...prev, [type]: prev[type] + 1 }));
+  };
+
+  const handleDecrement = (type) => {
+    setCounts((prev) => ({
+      ...prev,
+      [type]: prev[type] > 0 ? prev[type] - 1 : 0,
+    }));
+  };
+
   const handleServiceToggle = (id) => {
     setSelectedServices((prev) =>
       prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
   };
-
-  // Calculate totals
-  const basePrice = people * basePricePerPerson;
-  const servicesTotal = selectedServices.reduce((sum, id) => {
-    const service = services.find((s) => s.id === id);
-    return sum + (service ? service.price : 0);
-  }, 0);
-  // setTotal(basePrice + servicesTotal);
 
   return (
     <div className="max-w-sm mx-auto space-y-4">
@@ -123,19 +132,19 @@ export default function BookingCalculator({data,setPeople,people,setCounts,count
       {/* Services */}
       <div>
         <p className="font-semibold mb-2">Tickets/Services</p>
-        {services.map((service) => (
+        {data?.pricing?.extraPrices?.map((service) => (
           <label
-            key={service.id}
+            key={service?._id}
             className="flex items-center gap-2 mb-2 cursor-pointer"
           >
             <input
               type="checkbox"
-              checked={selectedServices.includes(service.id)}
-              onChange={() => handleServiceToggle(service.id)}
+              checked={selectedServices.includes(service?._id)}
+              onChange={() => handleServiceToggle(service?._id)}
               className="w-4 h-4"
             />
             <span>
-              {service.name} (+US${service.price})
+              {service?.name} (+US${service?.price})
             </span>
           </label>
         ))}
