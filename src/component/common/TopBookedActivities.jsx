@@ -56,7 +56,7 @@ const activities = [
 
 export default function TopBookedActivities() {
   const {tours}=useTourContext()
-  console.log("tours",tours)
+
   return (
 		<section className="bg-[#f5f5f5] py-12 px-4 sm:px-8 lg:px-16">
 			<div className="text-center mb-10">
@@ -150,7 +150,7 @@ export default function TopBookedActivities() {
 
 								{/* Price */}
 								<div className="mt-3 font-bold text-right text-gray-800">
-									USD{" "}
+									US{" "}
 									<span className="text-black">
 										{tour?.pricing?.perPersonPrice || 45}
 									</span>

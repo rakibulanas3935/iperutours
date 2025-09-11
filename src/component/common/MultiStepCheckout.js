@@ -23,6 +23,7 @@ export default function CheckoutMultiPage() {
   const [countryCode, GetCountryCode, countryCodeLoading, setCountryCode] = useAxiosGet()
   const basePrice = cartItem.reduce((sum, item) => sum + item.totalPrice, 0);
   const [paymentOption, setPaymentOption] = useState("50");
+  const [formToken, setFormToken] = useState(null);
 
   // Fetch countries and states/districts
   useEffect(() => {
@@ -113,50 +114,94 @@ export default function CheckoutMultiPage() {
     );
   };
 
-  const handleBooking = async (e) => {
-    e.preventDefault();
+  // const handleBooking = async (e) => {
+  //   e.preventDefault();
 
-    if (!user || !user._id) {
-      toast.warn("You must be logged in to place a booking.");
-      return;
-    }
+  //   if (!user || !user._id) {
+  //     toast.warn("You must be logged in to place a booking.");
+  //     return;
+  //   }
 
-    if (cartItem.length === 0) {
-      toast.warn("Your cart is empty!");
-      return;
-    }
+  //   if (cartItem.length === 0) {
+  //     toast.warn("Your cart is empty!");
+  //     return;
+  //   }
 
-    try {
-      for (const item of cartItem) {
-        const payload = {
-          tourId: item.tour._id,
-          userId: user._id,
-          travelDate: item.selectedDate,
-          numberOfPeople: item.numberOfPeople,
-          specialRequest: "",
-        };
+  //   try {
+  //     for (const item of cartItem) {
+  //       const payload = {
+  //         tourId: item.tour._id,
+  //         userId: user._id,
+  //         travelDate: item.selectedDate,
+  //         numberOfPeople: item.numberOfPeople,
+  //         specialRequest: "",
+  //       };
 
-        postBooking(
-          "http://localhost:3000/api/v1/booking",
-          payload,
-          (res) => {
-            if (res?.status === "success") {
-              localStorage.removeItem("cart");
-              reloadCart()
-            } else {
-              toast.error(`Booking failed for ${item.tour.title}`);
-            }
-          },
-          true
-        );
+  //       postBooking(
+  //         "http://localhost:3000/api/v1/booking",
+  //         payload,
+  //         (res) => {
+  //           if (res?.status === "success") {
+  //             localStorage.removeItem("cart");
+  //             reloadCart()
+  //           } else {
+  //             toast.error(`Booking failed for ${item.tour.title}`);
+  //           }
+  //         },
+  //         true
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Something went wrong while placing bookings.");
+  //   }
+  // };
+
+  // client-side checkout snippet (React)
+  
+  const handleBooking = async () => {
+    postBooking("http://localhost:3000/api/v1/create-bookings-and-payment", {
+      cartItems: cartItem, userId: user._id, travelDate: cartItem[0]?.selectedDate, paymentOption, customerEmail: user.email
+    }, (data) => {
+
+      if (data.amountToCharge > 0 && data.formToken) {
+        try {
+          // load IZIPAY script and initialize
+          const script = document.createElement("script");
+          script.src = "https://api.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js";
+          script.async = true;
+          script.onload = () => {
+            // global KR object - API from IZIPAY
+            KR.setFormConfig({
+              formToken: data.formToken,
+              // publicKey: process.env.NEXT_PUBLIC_IZIPAY_PUBLIC_KEY,
+              publicKey: '43924425:publickey_e85FjrDZvZwljGrasm9oSroJrXDRJIsf2vnw6AEWGHFm',
+              language: "es-PE",
+            });
+            // mount the form into a container
+            KR.mount("#myPaymentForm");
+            KR.onFormReady(() => console.log("IZIPAY form ready"));
+            KR.onSuccess((payload) => {
+              // you can show a "processing" indicator and wait for webhook
+              console.log("frontend got success event", payload);
+            });
+            KR.onError((err) => console.error("IZIPAY error", err));
+          };
+          document.body.appendChild(script);
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        // Pay later: already created bookings with orderId
+        toast.warn("Reservation created. Please pay later from your dashboard.");
       }
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong while placing bookings.");
-    }
+    }, true)
+
   };
 
-  console.log("countryCode", countryCode)
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col py-10">
@@ -372,7 +417,7 @@ export default function CheckoutMultiPage() {
               </div>
 
               {/* Card Fields - hide if Pay Later */}
-              {paymentOption !== "later" && (
+              {/* {paymentOption !== "later" && (
                 <>
                   <h3 className="text-lg font-semibold mb-2 text-gray-800">Credit or Debit Card</h3>
                   <input
@@ -398,15 +443,15 @@ export default function CheckoutMultiPage() {
                     className="border border-gray-300 p-2 rounded-lg w-full mb-2"
                   />
                 </>
-              )}
+              )} */}
 
               {/* Terms */}
-              <div className="flex items-start mt-2">
+              {/* <div className="flex items-start mt-2">
                 <input type="checkbox" className="mt-1" />
                 <p className="text-xs ml-2 text-gray-600">
                   I agree to the <span className="text-green-600">terms and conditions</span>.
                 </p>
-              </div>
+              </div> */}
 
               {/* Total */}
               <div className="flex justify-between mt-4 text-lg font-bold">

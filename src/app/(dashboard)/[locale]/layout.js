@@ -9,6 +9,7 @@ import { NewPlaceProvider } from "@/context/newPlaceContext";
 import { TourProvider } from "@/context/tourContext";
 import { CountryProvider } from "@/context/countryContext";
 import { BookingProvider } from "@/context/bookingContext";
+import { PaymentProvider } from "@/context/paymentContext";
 
 
 
@@ -37,6 +38,7 @@ export default function DashboardLayout({ children }) {
         <NewPlaceProvider>
         <CategoryProvider>
           <SubCategoryProvider>
+            <PaymentProvider>
            
           <body
             className={`bg-neutral-background font-sans text-text-body ${geistSans.variable} ${geistMono.variable}`}
@@ -49,7 +51,7 @@ export default function DashboardLayout({ children }) {
             </div>
             <ToastContainer />
           </body>
-         
+         </PaymentProvider>
           </SubCategoryProvider>
         </CategoryProvider>
         </NewPlaceProvider>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Home,
     Users,
@@ -15,60 +15,36 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/userContext";
 import Image from "next/image";
+import CommonLoader from "@/component/common/CommonLoader";
 
 const DashboardSidebar = () => {
     const [activeItem, setActiveItem] = useState("dashboard");
     const [activeItemName, setActiveItemName] = useState("Dashboard");
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { user, setReload, userLoading } = useUserContext();
-
-    const menuItems = [
-        {
-            name: "Dashboard",
-            value: "dashboard",
-            route: "/dashboard",
-            icon: Home,
-            isAdmin: true,
-        },
-        {
-            name: "Country",
-            value: "country",
-            route: "/dashboard/country",
-            icon: Users,
-            isAdmin: true,
-        },
-        {
-            name: "Destination",
-            value: "destination",
-            route: "/dashboard/destination",
-            icon: Users,
-            isAdmin: true,
-        },
-        {
-            name: "Tour Type",
-            value: "tourType",
-            route: "/dashboard/tourType",
-            icon: Users,
-            isAdmin: true,
-        },
-        {
-            name: "Add Tours",
-            value: "add-tours",
-            route: "/dashboard/add-tours",
-            icon: Users,
-            isAdmin: true,
-        },
-        {
-            name: "Booking",
-            value: "order",
-            route: "/dashboard/order",
-            icon: Users,
-            isAdmin: false,
-        },
-    ];
+    const [initialLoading, setInitialLoading] = useState(true);
 
     const router = useRouter();
 
+    // Simulate initial loading
+    useEffect(() => {
+        if (!userLoading) {
+            const timer = setTimeout(() => setInitialLoading(false), 500); // small delay
+            return () => clearTimeout(timer);
+        }
+    }, [userLoading]);
+
+    const menuItems = [
+        { name: "Dashboard", value: "dashboard", route: "/dashboard", icon: Home, isAdmin: true },
+        { name: "Country", value: "country", route: "/dashboard/country", icon: Users, isAdmin: true },
+        { name: "Destination", value: "destination", route: "/dashboard/destination", icon: Users, isAdmin: true },
+        { name: "Tour Type", value: "tourType", route: "/dashboard/tourType", icon: Users, isAdmin: true },
+        { name: "Add Tours", value: "add-tours", route: "/dashboard/add-tours", icon: Users, isAdmin: true },
+        { name: "Booking", value: "order", route: "/dashboard/order", icon: Users, isAdmin: false },
+        { name: "Payment", value: "payment", route: "/dashboard/payment", icon: Users, isAdmin: true },
+    ];
+
+    // if (initialLoading) return <CommonLoader />;
     return (
         <>
             {/* Sidebar Background Blur */}
@@ -114,8 +90,8 @@ const DashboardSidebar = () => {
                                             setActiveItemName(name);
                                         }}
                                         className={`w-full flex items-center px-4 py-3 rounded-xl space-x-3 transition-all ${activeItem === value
-                                                ? "bg-brand-secondary text-white shadow"
-                                                : "text-white hover:bg-white/10 hover:text-white"
+                                            ? "bg-brand-secondary text-white shadow"
+                                            : "text-white hover:bg-white/10 hover:text-white"
                                             }`}
                                     >
                                         <Icon size={20} />
@@ -181,6 +157,9 @@ const DashboardSidebar = () => {
                     </div>
                 </header>
             </div>
+
+
+
         </>
     );
 };

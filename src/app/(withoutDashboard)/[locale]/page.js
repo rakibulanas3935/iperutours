@@ -24,7 +24,7 @@ export default function HeroSection() {
   useEffect(() => {
     if (query.length > 1) {
       const delayDebounce = setTimeout(() => {
-        getGlobalSearch(`http://localhost:3000/api/v1/tours/search`,{q:query});
+        getGlobalSearch(`http://localhost:3000/api/v1/tours/search?title=${query}`);
       }, 400); // debounce typing
       return () => clearTimeout(delayDebounce);
     }

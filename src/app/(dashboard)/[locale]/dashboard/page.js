@@ -1,155 +1,92 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
-  Home, Calendar, BookOpen, FolderOpen, Image,
-  FileText, ShoppingBag, Users, Eye, TrendingUp
+  Users,
+  Image,
+  Home,
+  FolderOpen,
+  ShoppingBag,
 } from "lucide-react";
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-} from "recharts";
+
 import CommonLoader from "@/component/common/CommonLoader";
-import { useUserContext } from "@/context/userContext";
-
-
-const COLORS = ["#6366f1", "#14b8a6"];
+import useAxiosGet from "@/utils/useAxiosGet";
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState(null);
-  const {userLoading}=useUserContext()
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
+  const [dashboardData, getDashboardData, dashBoardDataLoading, setDashboardData] = useAxiosGet([])
   const fetchDashboardData = async () => {
-    try {
-      const res = await axios.get("https://nova-next-gen-server.onrender.com/api/v1/dashboard");
-      setDashboardData(res.data.data);
-    } catch (err) {
-      setError("Failed to load dashboard data");
-    } finally {
-      setLoading(false);
-    }
+    getDashboardData("http://localhost:3000/api/v1/dashboard", (res) => {
+      setDashboardData(res?.data);
+    });
   };
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
-  const stats = dashboardData
-    ? [
-        {
-          title: "Total Users",
-          value: dashboardData.totalUsers,
-          change: "+12%",
-          icon: Users,
-        },
-        {
-          title: "Active Projects",
-          value: dashboardData.activeProjects,
-          change: "+8%",
-          icon: FolderOpen,
-        },
-        {
-          title: "Total Blogs",
-          value: dashboardData.totalBlogs,
-          change: "+5%",
-          icon: FileText,
-        },
-        {
-          title: "Total Events",
-          value: dashboardData.totalEvents,
-          change: "+15%",
-          icon: Calendar,
-        },
-      ]
-    : [];
+  if (dashBoardDataLoading) return <CommonLoader />;
 
-  // if (loading) {
-  //   return <CommonLoader/>
-  // }
 
-  if (error) {
-    return <div className="p-6 text-red-500">{error}</div>;
-  }
+  const stats = [
+    {
+      title: "Users",
+      value: dashboardData.totalUsers,
+      icon: <Users className="w-6 h-6 text-white" />,
+      color: "bg-brand-primary",
+    },
+    {
+      title: "Countries",
+      value: dashboardData.totalCountries,
+      icon: <Home className="w-6 h-6 text-white" />,
+      color: "bg-accent-teal",
+    },
+    {
+      title: "Destinations",
+      value: dashboardData.totalPlaces,
+      icon: <Image className="w-6 h-6 text-white" />,
+      color: "bg-accent-yellow",
+    },
+    {
+      title: "Tours",
+      value: dashboardData.totalTours,
+      icon: <FolderOpen className="w-6 h-6 text-white" />,
+      color: "bg-accent-pink",
+    },
+    {
+      title: "Bookings",
+      value: dashboardData.totalBookings,
+      icon: <ShoppingBag className="w-6 h-6 text-white" />,
+      color: "bg-brand-secondary",
+    },
+  ];
 
   return (
-    <main className="p-6">
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* {stats.map(({ title, value, change, icon: Icon }) => (
-          <div
-            key={title}
-            className="bg-white/10 rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <div className="p-2 bg-gradient-to-r from-slate-600 to-slate-500 rounded-lg">
-                <Icon className="text-white" size={20} />
+    <div className="min-h-screen bg-neutral-background text-text-body p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-text-title">Dashboard</h1>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-10">
+          {stats.map((stat, index) => (
+            <div
+              key={index + 1}
+              className={`flex items-center p-6 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg ${stat?.color}`}
+            >
+              <div className="flex-shrink-0">{stat?.icon}</div>
+              <div className="ml-4">
+                <p className="text-white text-sm font-medium">{stat?.title}</p>
+                <p className="text-white text-2xl font-bold">{stat?.value}</p>
               </div>
-              <span className="text-green-400 text-sm font-medium">{change}</span>
             </div>
-            <h3 className="text-gray-300 text-sm mb-1">{title}</h3>
-            <p className="text-white text-2xl font-bold">{value}</p>
-          </div>
-        ))} */}
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Bar Chart */}
-        <div className="lg:col-span-2 bg-white/10 rounded-2xl p-6 border border-white/20">
-          <h3 className="text-xl font-semibold mb-6 text-white">User Growth</h3>
-          <div className="h-64">
-            {/* <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dashboardData.barData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
-                <XAxis dataKey="name" stroke="#fff" />
-                <YAxis stroke="#fff" />
-                <Tooltip />
-                <Bar dataKey="users" fill="#38bdf8" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer> */}
-          </div>
+          ))}
         </div>
 
-        {/* Pie Chart */}
-        <div className="bg-white/10 rounded-2xl p-6 border border-white/20">
-          <h3 className="text-xl font-semibold mb-6 text-white">User Status</h3>
-          <div className="h-64">
-            {/* <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={dashboardData.pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {dashboardData.pieData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer> */}
-          </div>
-        </div>
+        {/* Charts Placeholder */}
+
       </div>
-    </main>
+    </div>
   );
 };
 
