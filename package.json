@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
+    "@lyracom/embedded-form-glue": "^1.4.4",
     "@tiptap/react": "^3.3.0",
     "@tiptap/starter-kit": "^3.3.0",
     "axios": "^1.11.0",

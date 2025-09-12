@@ -17,6 +17,7 @@ import { CountryProvider } from '@/context/countryContext';
 import { CartProvider } from '@/context/cartContext';
 import { BookingProvider } from '@/context/bookingContext';
 import { DestinationWiseTourProvider } from '@/context/destinationWiseTourContext';
+import Head from 'next/head';
 
 
 
@@ -38,8 +39,22 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html lang={locale}>
-      <body>
+<html lang={locale}>
+  <Head>
+    {/* theme CLASSIC should be loaded in the HEAD section */}
+    <link rel="stylesheet" href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/classic-reset.min.css" />
+    <script
+      type="text/javascript"
+      src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+      kr-public-key="89289758:testpublickey_TxzPjl9xKlhM0a6tfSVNilcLTOUZ0ndsTogGTByPUATcE"
+      kr-post-url-success="paid.php"
+      kr-language="en-EN"
+    />
+    <script
+      src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/classic.js"
+    />
+  </Head>
+  <body>
         <ActiveMenuProvider>
         <NextIntlClientProvider>
           <UserProvider>

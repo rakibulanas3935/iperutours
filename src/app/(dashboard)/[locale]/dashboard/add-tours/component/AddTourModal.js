@@ -47,6 +47,9 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
         setExtraPrices(updated);
     };
     const [description, setDescription] = useState("");
+    const [date, setDate] = useState("");
+    const [time, setTime] = useState("");
+
     const [included, setIncluded] = useState([]);
     const [excluded, setExcluded] = useState([]);
     const [whatToBring, setWhatToBring] = useState([]);
@@ -61,6 +64,10 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
     const [selectedCountry, setselectedCountry] = useState(null);
     const [selectedSubCategory, setSelectedSubCategory] = useState(null);
     const [selectedPlace, setSelectedPlace] = useState(null);
+    const [timeSlots, setTimeSlots] = useState([
+  
+]);
+
 
     const [dropdownOpen, setDropdownOpen] = useState({
         category: false,
@@ -140,7 +147,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
 
     const uploadedImages = uploadRes.data.urls;
     console.log("uploadedImages", uploadedImages);
-
+    const advanceTimeDate = date && time ? new Date(`${date}T${time}`) : null;
     const tourData = {
       title,
       details,
@@ -155,10 +162,17 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
         basePrice: basePrice, // ✅ new field
         perPersonPrice: pricingType === "perPerson" ? perPersonPrice : undefined,
         groupPrices: pricingType === "groupTier" ? groupPrices : [],
-        extraPrices: extraPrices.filter(ep => ep.name && ep.price), // ✅ include extra prices if filled
+        extraPrices: extraPrices.filter(ep => ep.name && ep.price), 
       },
       country: selectedCountry?._id,
       place: selectedPlace?._id,
+       advanceTime: advanceTimeDate, // date object
+        timeSlots: timeSlots.map(slot => ({
+            startHour: slot.startHour,
+            startMinute: slot.startMinute,
+            endHour: slot.endHour,
+            endMinute: slot.endMinute,
+        })),
     };
 
     createTour(
@@ -315,6 +329,121 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
                                             transition duration-200"
                                     />
                                 </div>
+
+                                <div className="col-span-2 flex  space-y-4">
+                                    {/* Date Picker */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-text-title mb-2">
+                                            Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={date}
+                                            onChange={(e) => setDate(e.target.value)}
+                                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+        border border-neutral-line 
+        text-text-body bg-white
+        placeholder:text-gray-400
+        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+        transition duration-200"
+                                        />
+                                    </div>
+
+                                    {/* Time Picker */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-text-title mb-2">
+                                            Time
+                                        </label>
+                                        <input
+                                            type="time"
+                                            value={time}
+                                            onChange={(e) => setTime(e.target.value)}
+                                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+        border border-neutral-line 
+        text-text-body bg-white
+        placeholder:text-gray-400
+        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+        transition duration-200"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-span-2 space-y-4">
+  <label className="block text-sm font-medium text-text-title">
+    Time Slots
+  </label>
+
+  {timeSlots.map((slot, index) => (
+    <div key={index} className="flex items-center space-x-4">
+      {/* Start Time */}
+      <input
+        type="time"
+        value={`${String(slot.startHour).padStart(2, "0")}:${String(slot.startMinute).padStart(2, "0")}`}
+        onChange={(e) => {
+          const [h, m] = e.target.value.split(":").map(Number);
+          const updatedSlots = [...timeSlots];
+          updatedSlots[index].startHour = h;
+          updatedSlots[index].startMinute = m;
+          setTimeSlots(updatedSlots);
+        }}
+        className="w-40 px-4 py-2.5 rounded-lg shadow-sm 
+          border border-neutral-line 
+          text-text-body bg-white
+          placeholder:text-gray-400
+          focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+          transition duration-200"
+      />
+
+      <span className="text-gray-500">to</span>
+
+      {/* End Time */}
+      <input
+        type="time"
+        value={`${String(slot.endHour).padStart(2, "0")}:${String(slot.endMinute).padStart(2, "0")}`}
+        onChange={(e) => {
+          const [h, m] = e.target.value.split(":").map(Number);
+          const updatedSlots = [...timeSlots];
+          updatedSlots[index].endHour = h;
+          updatedSlots[index].endMinute = m;
+          setTimeSlots(updatedSlots);
+        }}
+        className="w-40 px-4 py-2.5 rounded-lg shadow-sm 
+          border border-neutral-line 
+          text-text-body bg-white
+          placeholder:text-gray-400
+          focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+          transition duration-200"
+      />
+
+      {/* Remove Button */}
+      <button
+        type="button"
+        onClick={() => {
+          const updatedSlots = timeSlots.filter((_, i) => i !== index);
+          setTimeSlots(updatedSlots);
+        }}
+        className="text-red-500 hover:text-red-700 text-sm font-medium"
+      >
+        Remove
+      </button>
+    </div>
+  ))}
+
+  {/* Add New Slot */}
+  <button
+    type="button"
+    onClick={() =>
+      setTimeSlots([...timeSlots, { startHour: 9, startMinute: 0, endHour: 10, endMinute: 0 }])
+    }
+    className="mt-2 px-4 py-2 rounded-lg bg-brand-primary text-white shadow 
+      hover:bg-brand-primary/90 transition duration-200"
+  >
+    + Add Time Slot
+  </button>
+</div>
+
+
+
                             </div>
                             {/* Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

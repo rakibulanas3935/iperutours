@@ -577,7 +577,7 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                 </label>
 
                                 <div className="space-y-2">
-                                    {extraPrices.map((ep, idx) => (
+                                    {extraPrices?.map((ep, idx) => (
                                         <div key={idx} className="flex gap-2">
                                             {/* Free-text name */}
                                             <input

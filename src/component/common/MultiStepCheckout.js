@@ -7,6 +7,9 @@ import { useUserContext } from "@/context/userContext";
 import { toast } from "react-toastify";
 import { useCartContext } from "@/context/cartContext";
 import useAxiosGet from "@/utils/useAxiosGet";
+import IzipayModal from "./IzipayModal";
+import PaymentForm from "./IzipayModal";
+import PaymentModal from "./PaymentModal";
 
 export default function CheckoutMultiPage() {
   const [countries, setCountries] = useState([]);
@@ -23,7 +26,7 @@ export default function CheckoutMultiPage() {
   const [countryCode, GetCountryCode, countryCodeLoading, setCountryCode] = useAxiosGet()
   const basePrice = cartItem.reduce((sum, item) => sum + item.totalPrice, 0);
   const [paymentOption, setPaymentOption] = useState("50");
-  const [formToken, setFormToken] = useState(null);
+  // const [formToken, setFormToken] = useState(null);
 
   // Fetch countries and states/districts
   useEffect(() => {
@@ -158,39 +161,17 @@ export default function CheckoutMultiPage() {
   // };
 
   // client-side checkout snippet (React)
+
+  const [open, setOpen] = useState(false);
+  const [formToken, setFormToken] = useState(null);
   
   const handleBooking = async () => {
     postBooking("http://localhost:3000/api/v1/create-bookings-and-payment", {
       cartItems: cartItem, userId: user._id, travelDate: cartItem[0]?.selectedDate, paymentOption, customerEmail: user.email
     }, (data) => {
-
       if (data.amountToCharge > 0 && data.formToken) {
-        try {
-          // load IZIPAY script and initialize
-          const script = document.createElement("script");
-          script.src = "https://api.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js";
-          script.async = true;
-          script.onload = () => {
-            // global KR object - API from IZIPAY
-            KR.setFormConfig({
-              formToken: data.formToken,
-              // publicKey: process.env.NEXT_PUBLIC_IZIPAY_PUBLIC_KEY,
-              publicKey: '43924425:publickey_e85FjrDZvZwljGrasm9oSroJrXDRJIsf2vnw6AEWGHFm',
-              language: "es-PE",
-            });
-            // mount the form into a container
-            KR.mount("#myPaymentForm");
-            KR.onFormReady(() => console.log("IZIPAY form ready"));
-            KR.onSuccess((payload) => {
-              // you can show a "processing" indicator and wait for webhook
-              console.log("frontend got success event", payload);
-            });
-            KR.onError((err) => console.error("IZIPAY error", err));
-          };
-          document.body.appendChild(script);
-        } catch (error) {
-          console.log(error)
-        }
+        setFormToken(data.formToken)
+        setOpen(true);
       } else {
         // Pay later: already created bookings with orderId
         toast.warn("Reservation created. Please pay later from your dashboard.");
@@ -472,6 +453,11 @@ export default function CheckoutMultiPage() {
                 {paymentOption === "later" ? "RESERVE NOW" : "PLACE BOOKING"}
               </button>
             </div>
+          )}
+
+
+          {open && formToken && (
+            <PaymentModal formToken={formToken} onClose={() => setOpen(false)} />
           )}
 
         </div>

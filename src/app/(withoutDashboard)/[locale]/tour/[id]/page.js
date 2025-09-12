@@ -19,17 +19,31 @@ import { addToCart } from '@/component/common/cartUtils';
 import { useCartContext } from '@/context/cartContext';
 
 export default function SacredValleyTrip() {
-    const [selectedDate, setSelectedDate] = useState();
+
     const [currentImage, setCurrentImage] = useState(0);
     const { id } = useParams();
     const router = useRouter();
-    const [tourDetails, getTourDetails, tourDetailsLoading] = useAxiosGet([]);
+    const [tourDetails, getTourDetails, tourDetailsLoading, setTourDetails] = useAxiosGet([]);
+    const today = new Date(); // Current date
+    // const minDate = tourDetails?.data?.advanceTime ? new Date(tourDetails?.data?.advanceTime) : today;
+    const [selectedDate, setSelectedDate] = useState(today);
+    const [selectedSlot, setSelectedSlot] = useState("");
+    const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
     const { reloadCart } = useCartContext()
     const [counts, setCounts] = useState({ adult: 1, child: 0, infant: 0 });
     const [people, setPeople] = useState(1);
     const [total, setTotal] = useState(0)
     useEffect(() => {
-        getTourDetails(`http://localhost:3000/api/v1/tours/${id}`);
+        getTourDetails(`http://localhost:3000/api/v1/tours/${id}`, (res) => {
+            // const availableTimeSlot = res?.data?.timeSlots?.filter(slot => {
+            //     const slotDate = new Date(selectedDate);
+            //     slotDate?.setHours(slot.startHour, slot.startMinute, 0, 0);
+            //     return slotDate >= res?.data?.advanceTime;
+            // }) || [];
+            // console.log(availableTimeSlot)
+            // setAvailableTimeSlots(res?.data?.timeSlots)
+            setTourDetails(res)
+        });
     }, [id]);
 
     if (tourDetailsLoading) return <CommonLoader />;
@@ -54,7 +68,40 @@ export default function SacredValleyTrip() {
         router.push('/cart');
     };
 
-    console.log("tourDetails", tourDetails)
+
+    console.log(tourDetails)
+
+    const advanceTimeDate = new Date(tourDetails?.data?.advanceTime);
+
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
+
+        // If the selected date is before advanceTime's date (midnight), show nothing
+        if (date.setHours(0, 0, 0, 0) < advanceTimeDate.setHours(0, 0, 0, 0)) {
+            setAvailableTimeSlots([]);
+            setSelectedSlot("No slots available");
+            return;
+        }
+        // Show only slots after advanceTime
+        const filteredSlots = tourDetails?.data?.timeSlots?.filter(slot => {
+            const slotDate = new Date(date);
+            slotDate.setHours(slot.startHour, slot.startMinute, 0, 0);
+            return slotDate >= advanceTimeDate;
+        }) || [];
+        setAvailableTimeSlots(filteredSlots);
+
+        if (filteredSlots.length === 1) {
+            const slot = filteredSlots[0];
+            setSelectedSlot(
+                `${String(slot.startHour).padStart(2, '0')}:${String(slot.startMinute).padStart(2, '0')} - ${String(slot.endHour).padStart(2, '0')}:${String(slot.endMinute).padStart(2, '0')}`
+            );
+        } else {
+            setSelectedSlot("");
+        }
+
+    };
+
+
     return (
         <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-10">
             {/* Left Column */}
@@ -74,9 +121,36 @@ export default function SacredValleyTrip() {
                         <span className="text-green-600 font-semibold">
                             {tourDetails?.availability || 'Daily availability'}
                         </span>
-                        <span className="text-yellow-500">★★★★★</span>
+                        {(() => {
+                            const reviews = tourDetails?.data?.reviews;
+                            const avg =
+                                reviews?.length === 0
+                                    ? 0
+                                    : reviews?.reduce((sum, r) => sum + r.rating, 0) /
+                                    reviews?.length;
+                            const roundedAvg = Math.round(avg * 10) / 10;
+                            return (
+                                <div className="flex items-center gap-2">
+
+                                    <div className="flex ">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <span
+                                                key={i}
+                                                className={`${i < Math.floor(roundedAvg)
+                                                    ? "text-yellow-400"
+                                                    : "text-gray-300"
+                                                    }`}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+
+                                </div>
+                            );
+                        })()}
                         <span className="text-gray-500">
-                            ({tourDetails?.data?.reviews.length || 8} reviews)
+                            ({tourDetails?.data?.reviews.length || 0} reviews)
                         </span>
                     </div>
                     {/* <div className="mt-4 text-gray-500 text-sm">
@@ -161,18 +235,47 @@ export default function SacredValleyTrip() {
                         <h2 className="text-2xl font-bold text-green-600">
                             ${tourDetails?.data?.pricing?.basePrice}
                         </h2>
-                        <span className="text-yellow-500">★★★★★</span>
+                        {(() => {
+                            const reviews = tourDetails?.data?.reviews;
+                            const avg =
+                                reviews?.length === 0
+                                    ? 0
+                                    : reviews?.reduce((sum, r) => sum + r.rating, 0) /
+                                    reviews?.length;
+                            const roundedAvg = Math.round(avg * 10) / 10;
+                            return (
+                                <div className="flex items-center gap-2">
+
+                                    <div className="flex ">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <span
+                                                key={i}
+                                                className={`${i < Math.floor(roundedAvg)
+                                                    ? "text-yellow-400"
+                                                    : "text-gray-300"
+                                                    }`}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <span className="text-sm text-gray-600">
+                                        {roundedAvg} ({tourDetails?.data?.reviews?.length})
+                                    </span>
+                                </div>
+                            );
+                        })()}
                     </div>
 
-                    {/* Modern Date Picker */}
                     <div className="mt-5">
                         <label className="font-medium text-gray-700">Select a date</label>
                         <div className="mt-2 border rounded-xl p-3 bg-white shadow-inner">
                             <DayPicker
                                 mode="single"
                                 selected={selectedDate}
-                                onSelect={setSelectedDate}
-                                defaultMonth={new Date(2025, 7)}
+                                onSelect={handleDateSelect}
+                                month={today}
+                                disabled={{ before: today }}
                                 styles={{
                                     caption: { color: '#111827', fontWeight: 600, fontSize: '1.1rem' },
                                     head: { color: '#6B7280', fontWeight: 500 },
@@ -213,14 +316,32 @@ export default function SacredValleyTrip() {
                             />
                         </div>
                     </div>
+                    <div className='mt-3'>
+                        <label className="font-medium text-gray-700">Sechedule</label>
+                        <select
+                            value={selectedSlot}
+                            onChange={(e) => setSelectedSlot(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-lg shadow-sm border border-neutral-line text-text-body bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition duration-200"
+                        >
+                            <option value="" disabled>Select a time slot</option>
+                            {availableTimeSlots?.length === 0 && <option disabled>No slots available</option>}
+                            {availableTimeSlots?.map((slot, i) => (
+                                <option key={i} value={`${slot?.startHour}:${slot?.startMinute}-${slot?.endHour}:${slot?.endMinute}`}>
+                                    {`${String(slot?.startHour).padStart(2, '0')}:${String(slot.startMinute).padStart(2, '0')} - ${String(slot.endHour).padStart(2, '0')}:${String(slot?.endMinute).padStart(2, '0')}`}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
                     {/* Duration */}
                     <div className="mt-4 mb-4">
                         <label className="font-medium text-gray-700">Duration</label>
                         <div className="w-full border rounded-lg p-2 bg-gray-50 text-gray-700 text-sm">
-                            {Number(tourDetails?.data?.details?.duration) < 24
-                                ? `${tourDetails?.data?.details?.duration} hours`
-                                : `${Math.floor(Number(tourDetails?.data?.details?.duration) / 24)} days`}
+                            {tourDetails?.data?.timeSlots?.length > 0
+                                ? `${tourDetails.data.timeSlots[0].endHour - tourDetails.data.timeSlots[0].startHour} hours`
+                                : Number(tourDetails?.data?.details?.duration) < 24
+                                    ? `${tourDetails?.data?.details?.duration} hours`
+                                    : `${Math.floor(Number(tourDetails?.data?.details?.duration) / 24)} days`}
                         </div>
                     </div>
 
