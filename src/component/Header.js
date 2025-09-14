@@ -32,7 +32,9 @@ export default function Header({ locale = "en" }) {
   const { activeMenu, activeMenuLoading, setactiveMenu, getAllactiveMenu } = useActiveMenuContext()
   const pathname = usePathname();
   const messages = locale === "pt" ? pt : en;
-
+  const handleClick = () => {
+    setactiveMenu('')
+  };
 
   return (
     <header className="w-full  z-50 shadow-sm bg-white">
@@ -57,7 +59,7 @@ export default function Header({ locale = "en" }) {
       {/* Main Header */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center" onClick={handleClick}>
           <Image
             src="/image.png"
             alt="Turismo Logo"
@@ -76,7 +78,7 @@ export default function Header({ locale = "en" }) {
               className={`flex items-center gap-1 font-semibold ${pathname === "/login" ? "text-brand-secondary" : "text-text-title"
                 }`}
             >
-              {user?.firstName||user?.name}
+              {user?.firstName || user?.name}
             </Link>) : (<Link
               href="/login"
               className={`flex items-center gap-1 font-semibold ${pathname === "/login" ? "text-brand-secondary" : "text-text-title"
@@ -144,7 +146,7 @@ export default function Header({ locale = "en" }) {
 
           {/* Cart */}
           {/* <Link href="/cart" className="relative"> */}
-            <CartIcon/>
+          <CartIcon />
           {/* </Link> */}
 
           {/* Search */}
@@ -171,24 +173,30 @@ export default function Header({ locale = "en" }) {
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden md:flex justify-center gap-6 py-3 bg-gray-50 font-semibold">
-        {newPlace?.data?.map((place) => (
-          <button
-            key={place?.placeName}
-            onClick={() => {
-              getAllactiveMenu(`http://localhost:3000/api/v1/places/${place?._id}`, (data) => {
-                setactiveMenu(data?.data)
-              })
-            }}
-            className={`transition-colors cursor-pointer ${activeMenu?._id === place?._id
-              ? "text-brand-secondary"
-              : "text-text-title hover:text-brand-secondary"
-              }`}
-          >
-            {place?.placeName}
-          </button>
-        ))}
-      </nav>
+      <nav className="hidden md:block py-3 bg-gray-50 font-semibold">
+        <div className="hidden md:flex max-w-7xl mx-auto overflow-x-auto scrollbar-none gap-6">
+          {newPlace?.data?.map((place) => (
+            <button
+              key={place?.placeName}
+              onClick={() => {
+                getAllactiveMenu(
+                  `http://localhost:3000/api/v1/places/${place?._id}`,
+                  (data) => setactiveMenu(data?.data)
+                );
+              }}
+              className={`flex-shrink-0 transition-colors cursor-pointer ${activeMenu?._id === place?._id
+                  ? "text-brand-secondary"
+                  : "text-text-title hover:text-brand-secondary"
+                }`}
+            >
+              {place?.placeName}
+            </button>
+          ))}
+        </div>
+
+  {/* Extra content */}
+  
+</nav>
 
       {/* Mobile Dropdown Menu */}
       <AnimatePresence>
@@ -201,23 +209,24 @@ export default function Header({ locale = "en" }) {
             className="md:hidden bg-white shadow-lg px-4 py-4 flex flex-col gap-3 font-semibold"
           >
             {newPlace?.data?.map((place) => (
-              <Link
-                key={place?.placeName}
-                href={place?.link}
-                className={`transition-colors ${pathname === place?.link
+              <button
+              key={place?.placeName}
+              onClick={() => {
+                getAllactiveMenu(
+                  `http://localhost:3000/api/v1/places/${place?._id}`,
+                  (data) => setactiveMenu(data?.data)
+                );
+              }}
+              className={`text-left transition-colors cursor-pointer ${activeMenu?._id === place?._id
                   ? "text-brand-secondary"
                   : "text-text-title hover:text-brand-secondary"
-                  }`}
-                onClick={() => setMenuOpen(false)}
-              >
-                {place?.placeName}
-              </Link>
+                }`}
+            >
+              {place?.placeName}
+            </button>
             ))}
 
             <div className="border-t pt-3 mt-3 flex flex-col gap-3">
-              {/* {
-                users?.data?.users[0]?.name 
-              } */}
               {
                 users ? (<Link
                   href="/login"

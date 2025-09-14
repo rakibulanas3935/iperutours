@@ -18,7 +18,7 @@ const ActiveMenuProvider = ({ children }) => {
     // Fetch all activeMenus whenever component mounts or reload changes
     useEffect(() => {
         getAllactiveMenu(`http://localhost:3000/api/v1/places`,(data)=>{
-            setactiveMenu(data?.data[0])
+            setactiveMenu()
         });
     }, [reload]);
 

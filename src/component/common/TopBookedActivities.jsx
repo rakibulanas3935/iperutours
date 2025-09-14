@@ -74,7 +74,7 @@ export default function TopBookedActivities() {
 							initial={{ opacity: 0, y: 50 }}
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: i * 0.2 }}
-							className="bg-white rounded-xl h-[25rem] shadow hover:shadow-lg cursor-pointer overflow-hidden relative"
+							className="bg-white rounded-xl h-[26rem] shadow hover:shadow-lg cursor-pointer overflow-hidden relative"
 						>
 							{/* Bestseller tag */}
 							<div className="absolute top-2 left-2 bg-yellow-400 text-xs font-semibold px-2 py-1 rounded">
@@ -151,7 +151,9 @@ export default function TopBookedActivities() {
 								</div>
 
 								{/* Price */}
+
 								<div className="mt-3 font-bold text-right text-gray-800">
+									<span className="text-sm">From:</span> <br />
 									US$
 									<span className="text-black">
 										{tour?.pricing?.basePrice || 0}

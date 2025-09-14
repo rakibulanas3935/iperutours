@@ -10,7 +10,7 @@ export default function CartWithReview({ onNext }) {
 
     // ✅ Calculate total dynamically
     const basePrice = cartItem.reduce((sum, item) => sum + item.totalPrice, 0);
-    const servicesFee = 405; // Fixed service fee
+    const servicesFee = 0; // Fixed service fee
     const totalPrice = basePrice + servicesFee;
 
     return (

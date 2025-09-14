@@ -8,16 +8,23 @@ import { motion } from "framer-motion"
 import TopBookedActivities from "@/component/common/TopBookedActivities"
 import CommonLoader from "@/component/common/CommonLoader"
 import Link from "next/link"
-import { Clock, MapPin } from "lucide-react"
+import { Clock, MapPin, Search } from "lucide-react"
+import { useActiveMenuContext } from "@/context/activeMenuContext"
 
 export default function Page() {
-  const { destination, id } = useParams() // ✅ make sure your folder is /destination/[id]/page.tsx
+  const { destination, id } = useParams() 
   const [singleDestinationTour, getSingleDestinatonTour, singleDestinationTourLoading, setSingleDestinationTour] =
-    useAxiosGet({}) // ✅ initialize with object
+    useAxiosGet({})
+
+    const {setactiveMenu} = useActiveMenuContext();
+
 
   useEffect(() => {
     if (id) {
-      getSingleDestinatonTour(`http://localhost:3000/api/v1/places/destination/tours/${id}`)
+      getSingleDestinatonTour(`http://localhost:3000/api/v1/places/destination/tours/${id}`,(res)=>{
+        setSingleDestinationTour(res)
+        setactiveMenu(res?.data?.place)
+      })
     }
   }, [id])
 
@@ -26,6 +33,8 @@ export default function Page() {
   if (singleDestinationTourLoading) {
     return <CommonLoader />
   }
+
+  console.log(tours)
 
   return (
     <>
@@ -76,7 +85,7 @@ export default function Page() {
                 className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-gray-700 focus:outline-none"
               />
               <button className="bg-orange-500 hover:bg-orange-600 text-white px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base">
-                🔍
+                <Search/>
               </button>
             </div>
           </motion.div>
@@ -93,60 +102,99 @@ export default function Page() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {tours?.map((tour, i) => (
-            <Link href={`/tour/${tour?._id}`} key={i + 1}>
+            <Link href={`/${tour?.country?.name}/${tour?.place?.placeName}/${tour?._id}`} key={i + 1}>
               <motion.div
-                key={tour?._id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.2 }}
-                className="bg-white rounded-xl shadow hover:shadow-lg cursor-pointer overflow-hidden relative"
-              >
-                {/* Bestseller tag */}
-                <div className="absolute top-2 left-2 bg-yellow-400 text-xs font-semibold px-2 py-1 rounded">
-                  Bestseller
-                </div>
+							key={tour?._id}
+							initial={{ opacity: 0, y: 50 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.6, delay: i * 0.2 }}
+							className="bg-white rounded-xl h-[26rem] shadow hover:shadow-lg cursor-pointer overflow-hidden relative"
+						>
+							{/* Bestseller tag */}
+							<div className="absolute top-2 left-2 bg-yellow-400 text-xs font-semibold px-2 py-1 rounded">
+								Bestseller
+							</div>
 
-                {/* Image */}
-                <img
-                  src={tour?.images[0]}
-                  alt={tour?.title}
-                  className="w-full h-40 object-cover"
-                />
+							{/* Image */}
+							<img
+								src={tour?.images[0]}
+								alt={tour?.title}
+								className="w-full h-40 object-cover"
+							/>
 
-                {/* Badge */}
+							{/* Badge */}
 
-                <div className="absolute top-36 right-2 bg-pink-600 text-white text-xs px-2 py-1 rounded">
-                  Breakfast + Lunch
-                </div>
+							<div className="absolute top-36 right-2 bg-pink-600 text-white text-xs px-2 py-1 rounded">
+								{tour?.facalites}
+							</div>
 
-                {/* Content */}
-                <div className="p-4">
-                  <p className="text-sm text-gray-500 flex items-center gap-1">
-                    <MapPin className="w-4 h-4 text-red-500" />{" "}
-                    {tour?.place?.placeName}
-                  </p>
-                  <h3 className="font-bold text-lg mt-1">{tour?.title}</h3>
+							{/* Content */}
+							<div className="p-4">
+								<p className="text-sm text-gray-500 flex items-center gap-1">
+									<MapPin className="w-4 h-4 text-red-500" />{" "}
+									{tour?.place?.placeName}
+								</p>
+								<h3 className="font-bold text-lg mt-1">{tour?.title}</h3>
 
-                  {/* Rating */}
-                  <div className="flex items-center gap-1 mt-2">
-                    <span className="text-yellow-400">★★★★★</span>
-                    <span className="text-sm text-gray-600">5 (9)</span>
-                  </div>
+								{/* Rating */}
+								<div className="flex items-center gap-1 mt-2">
+									<div className="flex flex-col items-center md:items-start">
+										{(() => {
+											const reviews = tour?.reviews;
+											const avg =
+												reviews.length === 0
+													? 0
+													: reviews.reduce((sum, r) => sum + r.rating, 0) /
+													  reviews.length;
+											const roundedAvg = Math.round(avg * 10) / 10;
+											return (
+												<div className="flex items-center gap-2">
+													
+													<div className="flex ">
+														{Array.from({ length: 5 }).map((_, i) => (
+															<span
+																key={i}
+																className={`${
+																	i < Math.floor(roundedAvg)
+																		? "text-yellow-400"
+																		: "text-gray-300"
+																}`}
+															>
+																★
+															</span>
+														))}
+													</div>
+													<span className="text-sm text-gray-600">
+														{roundedAvg} ({tour?.reviews?.length})
+													</span>
+												</div>
+											);
+										})()}
+									</div>
+									{/* <span className="text-yellow-400">★★★★★</span> */}
+								</div>
 
-                  {/* Recent bookings */}
-                  <p className="text-sm text-orange-600 mt-1">2 recent booking</p>
+								{/* Recent bookings */}
+								{
+									tour?.bookingCount>0 && <p className="text-sm text-orange-600 mt-1">{tour?.bookingCount || 0} recent booking</p>
+								}
 
-                  {/* Duration */}
-                  <div className="flex items-center text-sm text-gray-600 mt-2">
-                    <Clock className="w-4 h-4 mr-1" /> {tour?.details?.duration}
-                  </div>
+								{/* Duration */}
+								<div className="flex items-center text-sm text-gray-600 mt-2">
+									<Clock className="w-4 h-4 mr-1" /> {tour?.details?.duration}
+								</div>
 
-                  {/* Price */}
-                  <div className="mt-3 font-bold text-right text-gray-800">
-                    From: <span className="text-black">12</span>
-                  </div>
-                </div>
-              </motion.div>
+								{/* Price */}
+
+								<div className="mt-3 font-bold text-right text-gray-800">
+									<span className="text-sm">From:</span> <br />
+									US$
+									<span className="text-black">
+										{tour?.pricing?.basePrice || 0}
+									</span>
+								</div>
+							</div>
+						</motion.div>
             </Link>
           ))}
         </div>
