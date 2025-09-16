@@ -15,11 +15,11 @@ import { useCountryContext } from "@/context/countryContext";
 import { toast } from "react-toastify";
 
 export default function EditTourModal({ open, onClose, onSuccess, tour }) {
-    console.log('tour in edit modal', tour)
-    const [title, setTitle] = useState(tour?.title || "");
+    // const [title, setTitle] = useState(tour?.title || "");
+    const [titles, setTitles] = useState(tour?.title);
     const [tourType, setTourType] = useState(tour?.tourType);
     const [facalites, setFacalites] = useState(tour?.facalites);
-
+    console.log('tour', tour)
     const [details, setDetails] = useState({
         info: tour?.details?.info || "",
         duration: tour?.details?.duration || "",
@@ -55,21 +55,26 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
     const [images, setImages] = useState(tour?.images || []);
     const [imagePreviews, setImagePreviews] = useState(tour?.images || []);
     const [pricingType, setPricingType] = useState(tour?.pricing?.type || "perPerson");
+    const [perPersonPrices, setPerPersonPrices] = useState(tour?.pricing?.perPersonPrices);
     const [perPersonPrice, setPerPersonPrice] = useState(tour?.pricing?.perPersonPrice || "");
     const [groupPrices, setGroupPrices] = useState(tour?.pricing?.groupPrices || [{ persons: "", price: "" }]);
     const { newPlace, newPlaceLoading } = useNewPlaceContext();
     const { country, setReload, countryLoading } = useCountryContext();
-
-
+    const [advanceType, setAdvanceType] = useState("days");
+    const [advanceValue, setAdvanceValue] = useState(10);
+    const [timeSlots, setTimeSlots] = useState(tour?.timeSlots);
     const [, updateTour, createTourLoading] = useAxiosPost({}, "patch");
     const [selectedCountry, setselectedCountry] = useState(tour?.country || null);
-
+    const [descriptions, setDescriptions] = useState(tour?.description);
     const [selectedPlace, setSelectedPlace] = useState(tour?.place || null);
+    const [cancelation, setCancelation] = useState(tour?.cancelation);
+
 
     useEffect(() => {
         if (!tour) return;
 
-        setTitle(tour.title || "");
+        // setTitle(tour.title || "");
+        setTitles(tour?.title)
         setTourType(tour?.tourType || "")
         setFacalites(tour?.facalites || "")
         setDetails({
@@ -80,17 +85,21 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
             guide: tour.details?.guide || "",
             fitnessLevel: tour.details?.fitnessLevel || "",
         });
+        setDescriptions(tour?.description)
         setBasePrice(tour?.pricing?.basePrice || "")
         setExtraPrices(tour?.pricing?.extraPrices || "")
         setDescription(tour.description || "");
         setIncluded(tour.included || []);
+        setTimeSlots(tour?.timeSlots)
         setExcluded(tour.excluded || []);
         setWhatToBring(tour.whatToBring || []);
         setImages(tour.images || []);
         setImagePreviews(tour.images || []);
         setPricingType(tour.pricing?.type || "perPerson");
         setPerPersonPrice(tour.pricing?.perPersonPrice || "");
+        setPerPersonPrices(tour?.pricing?.perPersonPrices)
         setGroupPrices(tour.pricing?.groupPrices || [{ persons: "", price: "" }]);
+        setCancelation(tour?.cancelation)
         setselectedCountry(tour.country || null);
         setSelectedPlace(tour.place || null);
     }, [tour]);
@@ -133,6 +142,20 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
         setImages(reorderedImages);
     };
 
+    const handleDescriptionChange = (index, val) => {
+        const updated = [...descriptions];
+        updated[index] = val;
+        setDescriptions(updated);
+    };
+
+    const addNewDescription = () => {
+        setDescriptions([...descriptions, ""]);
+    };
+
+    const removeDescription = (index) => {
+        const updated = descriptions.filter((_, i) => i !== index);
+        setDescriptions(updated);
+    };
 
     // Group price handlers
     const handleGroupPriceChange = (index, field, value) => {
@@ -178,24 +201,34 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                 ...uploadedImages,
             ];
             const tourData = {
-                title,
-                tourType,
-                facalites,
+                title: titles,
                 details,
-                description,
+                facalites,
+                description: descriptions,
+                tourType,
                 included,
                 excluded,
                 whatToBring,
                 images: finalImages,
                 pricing: {
                     type: pricingType,
-                    basePrice: basePrice, // ✅ new field
-                    perPersonPrice: pricingType === "perPerson" ? perPersonPrice : undefined,
+                    basePrice: basePrice,
+                    perPersonPrices:
+                        pricingType === "perPerson" ? perPersonPrices : null,
                     groupPrices: pricingType === "groupTier" ? groupPrices : [],
-                    extraPrices: extraPrices.filter(ep => ep.name && ep.price),
+                    extraPrices: extraPrices.filter((ep) => ep.name && ep.price),
                 },
                 country: selectedCountry?._id,
                 place: selectedPlace?._id,
+                advanceTime: {
+                    [advanceType]: Number(advanceValue),
+                }, // date object
+                cancelation: cancelation,
+                timeSlots: timeSlots.map((slot) => ({
+                    startHour: slot.startHour,
+                    startMinute: slot.startMinute,
+
+                })),
             };
 
             updateTour(`http://localhost:3000/api/v1/tours/${tour?._id}`, tourData, (data) => {
@@ -273,24 +306,52 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                         <h2 className="text-2xl font-bold mb-6 text-center">➕ Add New Tour</h2>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
-
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-text-title mb-2">
-                                    Title
+                                    Tour Titles
                                 </label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Enter tour title"
-                                    className="w-full px-4 py-2.5 rounded-lg shadow-sm 
-                                                                border border-neutral-line 
-                                                                text-text-body bg-white
-                                                                placeholder:text-gray-400
-                                                                focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                                                transition duration-200"
-                                />
+
+                                {titles?.map((title, index) => (
+                                    <div key={index} className="mb-3 flex items-center gap-2">
+                                        <input
+                                            type="text"
+                                            value={title}
+                                            onChange={(e) => {
+                                                const newTitles = [...titles];
+                                                newTitles[index] = e.target.value;
+                                                setTitles(newTitles);
+                                            }}
+                                            placeholder="Enter tour title"
+                                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+          border border-neutral-line 
+          text-text-body bg-white
+          placeholder:text-gray-400
+          focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+          transition duration-200"
+                                        />
+                                        {index > 0 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setTitles(titles.filter((_, i) => i !== index));
+                                                }}
+                                                className="text-red-600 text-sm hover:underline"
+                                            >
+                                                Remove
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+
+                                <button
+                                    type="button"
+                                    onClick={() => setTitles([...titles, ""])}
+                                    className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700"
+                                >
+                                    + Add New Title
+                                </button>
                             </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-text-title mb-2">
@@ -302,11 +363,11 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                         onChange={(e) => setTourType(e.target.value)}
                                         placeholder="Enter tour Type"
                                         className="w-full px-4 py-2.5 rounded-lg shadow-sm 
-                                                                    border border-neutral-line 
-                                                                    text-text-body bg-white
-                                                                    placeholder:text-gray-400
-                                                                    focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                                                    transition duration-200"
+                                                                border border-neutral-line 
+                                                                text-text-body bg-white
+                                                                placeholder:text-gray-400
+                                                                focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                                                transition duration-200"
                                     />
                                 </div>
                                 <div>
@@ -319,30 +380,145 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                         onChange={(e) => setFacalites(e.target.value)}
                                         placeholder="Facalites"
                                         className="w-full px-4 py-2.5 rounded-lg shadow-sm 
-                                                                    border border-neutral-line 
-                                                                    text-text-body bg-white
-                                                                    placeholder:text-gray-400
-                                                                    focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                                                    transition duration-200"
+                                                                border border-neutral-line 
+                                                                text-text-body bg-white
+                                                                placeholder:text-gray-400
+                                                                focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                                                transition duration-200"
                                     />
+                                </div>
+
+                                <div className="col-span-2 flex items-end space-x-4">
+                                    {/* Type Dropdown */}
+                                    <div className="flex-1">
+                                        <label className="block text-sm font-medium text-text-title mb-2">
+                                            Advance Time Type
+                                        </label>
+                                        <select
+                                            value={advanceType}
+                                            onChange={(e) => setAdvanceType(e.target.value)}
+                                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+                            border border-neutral-line 
+                            text-text-body bg-white
+                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                            transition duration-200"
+                                        >
+                                            <option value="">Select type</option>
+                                            <option value="days">Days</option>
+                                            <option value="hours">Hours</option>
+                                            <option value="months">Months</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Number Input */}
+                                    <div className="flex-1">
+                                        <label className="block text-sm font-medium text-text-title mb-2">
+                                            Amount
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={advanceValue}
+                                            onChange={(e) => setAdvanceValue(e.target.value)}
+                                            className="w-full px-4 py-2.5 rounded-lg shadow-sm 
+                            border border-neutral-line 
+                            text-text-body bg-white
+                            placeholder:text-gray-400
+                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                            transition duration-200"
+                                            placeholder="Enter value"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-span-2 space-y-4">
+                                    <label className="block text-sm font-medium text-text-title">
+                                        Time Slots
+                                    </label>
+
+                                    {timeSlots?.map((slot, index) => (
+                                        <div key={index} className="flex items-center space-x-4">
+                                            {/* Start Time */}
+                                            <input
+                                                type="time"
+                                                value={`${String(slot.startHour).padStart(
+                                                    2,
+                                                    "0"
+                                                )}:${String(slot.startMinute).padStart(2, "0")}`}
+                                                onChange={(e) => {
+                                                    const [h, m] = e.target.value.split(":").map(Number);
+                                                    const updatedSlots = [...timeSlots];
+                                                    updatedSlots[index].startHour = h;
+                                                    updatedSlots[index].startMinute = m;
+                                                    setTimeSlots(updatedSlots);
+                                                }}
+                                                className="w-40 px-4 py-2.5 rounded-lg shadow-sm 
+                              border border-neutral-line 
+                              text-text-body bg-white
+                              placeholder:text-gray-400
+                              focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                              transition duration-200"
+                                            />
+
+
+
+                                            {/* Remove Button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const updatedSlots = timeSlots.filter(
+                                                        (_, i) => i !== index
+                                                    );
+                                                    setTimeSlots(updatedSlots);
+                                                }}
+                                                className="text-red-500 hover:text-red-700 text-sm font-medium"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ))}
+
+                                    {/* Add New Slot */}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setTimeSlots([
+                                                ...timeSlots,
+                                                {
+                                                    startHour: 9,
+                                                    startMinute: 0,
+                                                    endHour: 10,
+                                                    endMinute: 0,
+                                                },
+                                            ])
+                                        }
+                                        className="mt-2 px-4 py-2 rounded-lg bg-brand-primary text-white shadow 
+                          hover:bg-brand-primary/90 transition duration-200"
+                                    >
+                                        + Add Time Slot
+                                    </button>
                                 </div>
                             </div>
                             {/* Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {Object.keys(details).map((key) => (
                                     <div key={key}>
-                                        <label className="block text-sm font-medium text-text-title mb-2 capitalize">{key}</label>
+                                        <label className="block text-sm font-medium text-text-title mb-2 capitalize">
+                                            {key}
+                                        </label>
                                         <input
                                             type="text"
                                             value={details[key]}
-                                            onChange={(e) => setDetails({ ...details, [key]: e.target.value })}
+                                            onChange={(e) =>
+                                                setDetails({ ...details, [key]: e.target.value })
+                                            }
                                             placeholder={`Enter ${key}`}
                                             className="w-full px-4 py-2.5 rounded-lg shadow-sm 
-                                                                border border-neutral-line 
-                                                                text-text-body bg-white
-                                                                placeholder:text-gray-400
-                                                                focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                                                transition duration-200"
+                                                            border border-neutral-line 
+                                                            text-text-body bg-white
+                                                            placeholder:text-gray-400
+                                                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                                            transition duration-200"
                                         />
                                     </div>
                                 ))}
@@ -355,7 +531,9 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                     selected={selectedCountry}
                                     setSelected={setselectedCountry}
                                     open={dropdownOpen.country}
-                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, country: open })}
+                                    setOpen={(open) =>
+                                        setDropdownOpen({ ...dropdownOpen, country: open })
+                                    }
                                 />
                                 <Dropdown
                                     label="Destination"
@@ -363,38 +541,71 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                     selected={selectedPlace}
                                     setSelected={setSelectedPlace}
                                     open={dropdownOpen.place}
-                                    setOpen={(open) => setDropdownOpen({ ...dropdownOpen, place: open })}
+                                    setOpen={(open) =>
+                                        setDropdownOpen({ ...dropdownOpen, place: open })
+                                    }
                                 />
                             </div>
                             {/* Description */}
                             <div>
-                                <label className="block text-sm font-medium text-text-title mb-2 capitalize">Description</label>
-                                <RichTextEditor
-                                    value={description}
-                                    className="w-full px-4 rounded-lg shadow-sm 
-                                                                border border-neutral-line 
-                                                                !text-text-body bg-white
-                                                                placeholder:text-text-body
-                                                                focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                                                transition duration-200"
-                                    onChange={(val) => setDescription(val)}
-                                />
+                                <label className="block text-sm font-medium text-text-title mb-2 capitalize">
+                                    Description
+                                </label>
+
+                                {descriptions?.map((desc, index) => (
+                                    <div key={index} className="mb-4">
+                                        <RichTextEditor
+                                            content={desc}
+                                            className="w-full px-4 rounded-lg shadow-sm 
+                              border border-neutral-line 
+                              !text-text-body bg-white
+                              placeholder:text-text-body
+                              focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                              transition duration-200"
+                                            onChange={(val) => handleDescriptionChange(index, val)}
+                                        />
+                                        {index > 0 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeDescription(index)}
+                                                className="mt-2 text-red-600 text-sm hover:underline"
+                                            >
+                                                Remove
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+
+                                <button
+                                    type="button"
+                                    onClick={addNewDescription}
+                                    className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700"
+                                >
+                                    + Add New Description
+                                </button>
                             </div>
 
                             {/* Tags */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Included</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Included
+                                </label>
                                 <TagInput items={included} setter={setIncluded} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Excluded</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Excluded
+                                </label>
                                 <TagInput items={excluded} setter={setExcluded} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">What to Bring</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    What to Bring
+                                </label>
                                 <TagInput items={whatToBring} setter={setWhatToBring} />
                             </div>
 
+                            {/* Images */}
                             {/* Images */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Images</label>
@@ -491,31 +702,76 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                         onChange={(e) => setBasePrice(e.target.value)}
                                         placeholder="Enter base price"
                                         className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-        border border-neutral-line 
-        text-text-body bg-white
-        placeholder:text-gray-400
-        focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-        transition duration-200"
+                            border border-neutral-line 
+                            text-text-body bg-white
+                            placeholder:text-gray-400
+                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                            transition duration-200"
                                     />
                                 </div>
 
                                 {/* ✅ Conditional Pricing */}
                                 {pricingType === "perPerson" && (
-                                    <div className="mt-3">
+                                    <div className="mt-3 space-y-2">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Price Per Person
+                                            Per Person Prices
                                         </label>
+
+                                        {/* Adult */}
                                         <input
                                             type="number"
-                                            value={perPersonPrice}
-                                            onChange={(e) => setPerPersonPrice(e.target.value)}
-                                            placeholder="Enter price per person"
+                                            value={perPersonPrices?.adult}
+                                            onChange={(e) =>
+                                                setPerPersonPrices({
+                                                    ...perPersonPrices,
+                                                    adult: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Adult price"
                                             className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-          border border-neutral-line 
-          text-text-body bg-white
-          placeholder:text-gray-400
-          focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-          transition duration-200"
+                            border border-neutral-line 
+                            text-text-body bg-white
+                            placeholder:text-gray-400
+                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                            transition duration-200"
+                                        />
+
+                                        {/* Child */}
+                                        <input
+                                            type="number"
+                                            value={perPersonPrices?.child}
+                                            onChange={(e) =>
+                                                setPerPersonPrices({
+                                                    ...perPersonPrices,
+                                                    child: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Child price"
+                                            className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
+                            border border-neutral-line 
+                            text-text-body bg-white
+                            placeholder:text-gray-400
+                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                            transition duration-200"
+                                        />
+
+                                        {/* Infant */}
+                                        <input
+                                            type="number"
+                                            value={perPersonPrices?.infant}
+                                            onChange={(e) =>
+                                                setPerPersonPrices({
+                                                    ...perPersonPrices,
+                                                    infant: e.target.value,
+                                                })
+                                            }
+                                            placeholder="Infant price"
+                                            className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
+                            border border-neutral-line 
+                            text-text-body bg-white
+                            placeholder:text-gray-400
+                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                            transition duration-200"
                                         />
                                     </div>
                                 )}
@@ -530,26 +786,34 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                                 <input
                                                     type="number"
                                                     value={gp.persons}
-                                                    onChange={(e) => handleGroupPriceChange(idx, "persons", e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleGroupPriceChange(
+                                                            idx,
+                                                            "persons",
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     placeholder="Persons"
                                                     className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-              border border-neutral-line 
-              text-text-body bg-white
-              placeholder:text-gray-400
-              focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-              transition duration-200"
+                                  border border-neutral-line 
+                                  text-text-body bg-white
+                                  placeholder:text-gray-400
+                                  focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                  transition duration-200"
                                                 />
                                                 <input
                                                     type="number"
                                                     value={gp.price}
-                                                    onChange={(e) => handleGroupPriceChange(idx, "price", e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleGroupPriceChange(idx, "price", e.target.value)
+                                                    }
                                                     placeholder="Price"
                                                     className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-              border border-neutral-line 
-              text-text-body bg-white
-              placeholder:text-gray-400
-              focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-              transition duration-200"
+                                  border border-neutral-line 
+                                  text-text-body bg-white
+                                  placeholder:text-gray-400
+                                  focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                  transition duration-200"
                                                 />
                                                 <button
                                                     type="button"
@@ -583,28 +847,32 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                             <input
                                                 type="text"
                                                 value={ep.name}
-                                                onChange={(e) => handleExtraPriceChange(idx, "name", e.target.value)}
+                                                onChange={(e) =>
+                                                    handleExtraPriceChange(idx, "name", e.target.value)
+                                                }
                                                 placeholder="Option Name (e.g. Breakfast)"
                                                 className="flex-1 px-3 py-2 rounded-lg shadow-sm 
-            border border-neutral-line 
-            text-text-body bg-white
-            placeholder:text-gray-400
-            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-            transition duration-200"
+                                border border-neutral-line 
+                                text-text-body bg-white
+                                placeholder:text-gray-400
+                                focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                transition duration-200"
                                             />
 
                                             {/* Price */}
                                             <input
                                                 type="number"
                                                 value={ep.price}
-                                                onChange={(e) => handleExtraPriceChange(idx, "price", e.target.value)}
+                                                onChange={(e) =>
+                                                    handleExtraPriceChange(idx, "price", e.target.value)
+                                                }
                                                 placeholder="Price"
                                                 className="w-32 px-3 py-2 rounded-lg shadow-sm 
-            border border-neutral-line 
-            text-text-body bg-white
-            placeholder:text-gray-400
-            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-            transition duration-200"
+                                border border-neutral-line 
+                                text-text-body bg-white
+                                placeholder:text-gray-400
+                                focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                                transition duration-200"
                                             />
 
                                             {/* Remove row */}
@@ -622,22 +890,34 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                                     <button
                                         type="button"
                                         onClick={addExtraPriceRow}
-                                        className="bg-brand-primary text-white px-3 py-1 rounded-lg hover:bg-brand-secondary mt-2"
+                                        className="bg-brand-secondary text-white px-3 py-1 rounded-lg hover:bg-brand-secondary mt-2"
                                     >
                                         + Add Extra Option
                                     </button>
                                 </div>
                             </div>
-
-
+                            <RichTextEditor
+                                content={cancelation}
+                                className="w-full px-4 rounded-lg shadow-sm 
+          border border-neutral-line 
+          !text-text-body bg-white
+          placeholder:text-text-body
+          focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+          transition duration-200"
+                                onChange={(val) => setCancelation(val)}
+                            />
                             {/* Submit */}
                             <button
                                 type="submit"
                                 disabled={uploading}
                                 className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white py-3 rounded-lg hover:bg-brand-secondary transition disabled:opacity-50"
                             >
-                                {uploading ? <Loader2 className="animate-spin h-5 w-5" /> : <Upload size={18} />}
-                                {uploading ? "Uploading..." : "Update Tour"}
+                                {uploading ? (
+                                    <Loader2 className="animate-spin h-5 w-5" />
+                                ) : (
+                                    <Upload size={18} />
+                                )}
+                                {uploading ? "Uploading..." : "Add Tour"}
                             </button>
                         </form>
                     </motion.div>

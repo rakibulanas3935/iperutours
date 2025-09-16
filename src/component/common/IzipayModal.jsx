@@ -1,85 +1,68 @@
 import { useEffect } from "react";
-import KRGlue from "@lyracom/embedded-form-glue";
-import { toast } from "react-toastify";
-import Head from "next/head";
-import Script from "next/script";
-export default function PaymentForm({ formToken, }) {
+import KRGlue from '@lyracom/embedded-form-glue'
+export default function PaymentForm({ formToken }) {
 	useEffect(() => {
-		async function setupPaymentForm() {
-			const endpoint = "https://api.micuentaweb.pe";
-			const publicKey =
-				"43924425:testpublickey_zSqnmUEtUPqAW503YmUakRSR42lSJdqnNE20w4NBTgEzy";
+		if (!formToken) return;
 
+		const loadIzipay = async () => {
 			try {
-				const { KR } = await KRGlue.loadLibrary(endpoint, publicKey);
+				// Add theme CSS (optional but recommended)
+				const themeCss = document.createElement("link");
+				themeCss.rel = "stylesheet";
+				themeCss.href =
+					"https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon-reset.min.css";
+				document.head.appendChild(themeCss);
 
-				await KR.setFormConfig({
-					formToken,
-					"kr-language": "en-US",
-				});
+				const themeScript = document.createElement("script");
+				themeScript.src =
+					"https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon.js";
+				document.head.appendChild(themeScript);
 
-				await KR.renderElements("#myPaymentForm");
+				// Load Krypton script
+				const script = document.createElement("script");
+				script.src =
+					"https://api.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js";
+				script.async = true;
 
-				KR.onSubmit(async (paymentData) => {
-					console.log("Payment data received:", paymentData);
+				script.onload = () => {
+					// global KR object - Izipay client API
+					window.KR.setFormConfig({
+						formToken: formToken,
+						publicKey:
+							"43924425:testpublickey_zSqnmUEtUPqAW503YmUakRSR42lSJdqnNE20w4NBTgEzy",
+						language: "en-US",
+					});
 
-					try {
-						const response = await fetch(
-							"http://localhost:3000/validatePayment",
-							{
-								method: "POST",
-								headers: { "Content-Type": "application/json" },
-								body: JSON.stringify({
-									clientAnswer: paymentData.clientAnswer,
-									hash: paymentData.hash,
-								}),
+					window.KR.mount("#myPaymentForm");
+
+					window.KR.onFormReady(async(payment) => {
+						console.log("IZIPAY form ready");
+
+						// 🔒 Hide the two dropdowns
+						const style = document.createElement("style");
+						style.innerHTML = `
+							#myPaymentForm .kr-payment-method,
+							#myPaymentForm .kr-installment {
+								display: none !important;
 							}
-						);
+						`;
+						document.head.appendChild(style);
+					});
 
-						if (response.ok) {
-							toast.success("Payment successful!");
-							// KR.close();
-						} else {
-							const err = await response.text();
-							toast.error("Payment failed: " + err);
-						}
-					} catch (err) {
-						toast.error("Error validating payment: " + err.message);
-					}
+					window.KR.onSuccess((payload) =>
+						console.log("frontend got success event", payload)
+					);
+					window.KR.onError((err) => console.error("IZIPAY error", err));
+				};
 
-					return false; // prevent default KR redirect
-				});
-			} catch (error) {
-				setMessage(error + " (see console for more details)");
-				console.error(error);
+				document.body.appendChild(script);
+			} catch (err) {
+				console.error(err);
 			}
-		}
+		};
 
-		setupPaymentForm();
-	}, []);
+		loadIzipay();
+	}, [formToken]);
 
-	return (
-		<div>
-			<Head>
-				<title>NextJS</title>
-				<meta name="viewport" content="initial-scale=1.0, width=device-width" />
-				 <link
-    rel="stylesheet"
-    href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon-reset.min.css"
-  />
-  <link
-    rel="stylesheet"
-    href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/kr-embedded.min.css"
-  />
-			</Head>
-			<Script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js" />
-			<Script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon.js" />
-			<div className="container">
-				<div id="myPaymentForm">
-					<div className="kr-smart-form" />
-				</div>
-				{/* <div data-test="payment-message">{message}</div> */}
-			</div>
-		</div>
-	);
+	return <div id="myPaymentForm" className="kr-smart-form"></div>;
 }

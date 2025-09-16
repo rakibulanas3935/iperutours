@@ -15,6 +15,7 @@ import { CountryProvider } from '@/context/countryContext';
 import { CartProvider } from '@/context/cartContext';
 import { BookingProvider } from '@/context/bookingContext';
 import { DestinationWiseTourProvider } from '@/context/destinationWiseTourContext';
+import Head from 'next/head';
 
 
 export const metadata = {
@@ -35,7 +36,17 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
-
+     <Head>
+        <link
+          rel="stylesheet"
+          href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon-reset.min.css"
+        />
+        <script
+        defer
+          src="https://api.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+          async
+        ></script>
+      </Head>
       <body>
         <ActiveMenuProvider>
           <NextIntlClientProvider>

@@ -52,12 +52,12 @@ export default function CategoryPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-text-title">Tour Type</h1>
+          <h1 className="text-3xl font-bold text-text-title">Person Type</h1>
           <button
             onClick={() => setCreateCategoryModalOpen(true)}
             className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white px-5 py-2.5 rounded-lg shadow-md transition-all duration-200"
           >
-            <Plus className="w-5 h-5" /> Add Tour Type
+            <Plus className="w-5 h-5" /> Add Person
           </button>
         </div>
 
@@ -67,7 +67,7 @@ export default function CategoryPage() {
             <thead className="bg-neutral-background text-text-title text-sm">
               <tr>
                 <th className="px-6 py-3 text-left font-semibold">Sl</th>
-                <th className="px-6 py-3 text-left font-semibold">Tour Type</th>
+                <th className="px-6 py-3 text-left font-semibold">Person Type</th>
                 <th className="px-6 py-3 text-center font-semibold">Actions</th>
               </tr>
             </thead>

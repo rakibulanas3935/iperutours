@@ -9,8 +9,16 @@ export default function CartWithReview({ onNext }) {
     const { cartItem } = useCartContext();
 
     // ✅ Calculate total dynamically
-    const basePrice = cartItem.reduce((sum, item) => sum + item.totalPrice, 0);
-    const servicesFee = 0; // Fixed service fee
+    const basePrice = cartItem.reduce((sum, item) => sum + (item?.basePrice || 0), 0);
+
+    const servicesFee = cartItem.reduce((sum, item) => {
+        const serviceTotal = item.selectedServices?.reduce(
+            (sSum, service) => sSum + (service.price || 0),
+            0
+        ) || 0;
+        return sum + serviceTotal;
+    }, 0);
+
     const totalPrice = basePrice + servicesFee;
 
     return (
@@ -29,7 +37,7 @@ export default function CartWithReview({ onNext }) {
                     transition={{ duration: 0.6 }}
                 >
                     <div className="border-t pt-3 text-sm">
-                        <div className='text-2xl font-bold mb-3'>Total</div>
+                        <div className='text-2xl font-bold mb-3'>Ready to Go?</div>
                         <div className="flex justify-between mb-2">
                             <span>Base price</span>
                             <span className="font-semibold">US$ {basePrice}</span>
@@ -49,7 +57,7 @@ export default function CartWithReview({ onNext }) {
                         className="mt-6 cursor-pointer w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-brand-secondary transition-all"
                         onClick={onNext}
                     >
-                        Book Now
+                        Proceed to Checkout
                     </button>
                 </motion.div>
             </div>

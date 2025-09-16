@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Clock, MapPin, Languages, Dumbbell } from "lucide-react";
+import DescriptionSection from "./DescriptionSection";
 
 export default function TripInfo({ data }) {
 	const sections = [
@@ -135,11 +136,7 @@ export default function TripInfo({ data }) {
 			</section>
 
 			<section id="description" className="mb-12 scroll-mt-28">
-				<h2 className="text-xl font-bold text-gray-800 mb-3">Description</h2>
-				<p
-					className="mt-2 text-sm text-text-body"
-					dangerouslySetInnerHTML={{ __html: data?.description }}
-				/>
+				<DescriptionSection data={data}/>
 			</section>
 
 			<section id="what-to-bring" className="mb-12 scroll-mt-28">

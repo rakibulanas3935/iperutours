@@ -69,7 +69,8 @@ const AddTour = () => {
             <thead className="bg-neutral-background text-text-title text-sm">
               <tr>
                 <th className="px-6 py-3 text-left font-semibold">Sl</th>
-                <th className="px-6 py-3 text-left font-semibold">Place Name</th>
+                <th className="px-6 py-3 text-left font-semibold">Tours</th>
+                <th className="px-6 py-3 text-left font-semibold">Base Price</th>
                 <th className="px-6 py-3 text-left font-semibold">Banner</th>
                 <th className="px-6 py-3 text-center font-semibold">Actions</th>
               </tr>
@@ -86,6 +87,9 @@ const AddTour = () => {
                   </td>
                   <td className="px-6 py-4 font-medium text-text-body">
                     {tour?.title}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-text-body">
+                    US$ {tour?.pricing?.basePrice}
                   </td>
                   <td className="px-6 py-4 font-medium text-text-body">
                     {/* {?.name} */}

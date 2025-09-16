@@ -11,18 +11,17 @@ export default function BookingCalculator({
   counts,
   total,
   setTotal,
+  setSelectedServices: setParentSelectedServices,
+  basePrice, setBasePrice
 }) {
-  const basePricePerPerson = data?.pricing?.basePrice || 0;
-
   const [selectedServices, setSelectedServices] = useState([]);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Track totals locally
-  const [basePrice, setBasePrice] = useState(0);
+ 
   const [servicesTotal, setServicesTotal] = useState(0);
 
-  // Update people count when counts change
+  // Update total people
   useEffect(() => {
     const totalPeople = counts.adult + counts.child + counts.infant;
     setPeople(totalPeople);
@@ -39,9 +38,36 @@ export default function BookingCalculator({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Recalculate totals when people/services change
+  // Calculate totals
   useEffect(() => {
-    const newBasePrice = people * basePricePerPerson;
+    let newBasePrice = 0;
+
+    if (data?.pricing?.type === "perPerson") {
+      newBasePrice =
+        (counts.adult * (data.pricing.perPersonPrices.adult || 0)) +
+        (counts.child * (data.pricing.perPersonPrices.child || 0)) +
+        (counts.infant * (data.pricing.perPersonPrices.infant || 0));
+    } else if (data?.pricing?.type === "groupTier") {
+      const totalPeople = counts.adult + counts.child + counts.infant;
+      const sortedTiers = data.pricing.groupPrices
+        .slice()
+        .sort((a, b) => a.persons - b.persons);
+
+      // Find the largest tier <= totalPeople (or smallest tier if none fits)
+      let applicableTier = sortedTiers[0];
+      for (let i = 0; i < sortedTiers.length; i++) {
+        if (totalPeople >= sortedTiers[i].persons) {
+          applicableTier = sortedTiers[i];
+        } else {
+          break;
+        }
+      }
+
+      // Calculate blocks needed
+      const blocks = Math.ceil(totalPeople / applicableTier.persons);
+      newBasePrice = blocks * applicableTier.price;
+    }
+
     const newServicesTotal = selectedServices.reduce((sum, id) => {
       const service = data?.pricing?.extraPrices?.find((s) => s?._id === id);
       return sum + (service ? service.price : 0);
@@ -50,7 +76,25 @@ export default function BookingCalculator({
     setBasePrice(newBasePrice);
     setServicesTotal(newServicesTotal);
     setTotal(newBasePrice + newServicesTotal);
-  }, [people, selectedServices, data?.pricing?.extraPrices, basePricePerPerson, setTotal]);
+  }, [
+    counts,
+    selectedServices,
+    data?.pricing?.type,
+    data?.pricing?.perPersonPrices,
+    data?.pricing?.groupPrices,
+    data?.pricing?.extraPrices,
+    setTotal,
+  ]);
+
+  // Send selected services (full objects) to parent
+  useEffect(() => {
+    if (setParentSelectedServices) {
+      const selectedObjects = selectedServices
+        .map((id) => data?.pricing?.extraPrices?.find((s) => s._id === id))
+        .filter(Boolean);
+      setParentSelectedServices(selectedObjects);
+    }
+  }, [selectedServices, data?.pricing?.extraPrices, setParentSelectedServices]);
 
   const handleIncrement = (type) => {
     setCounts((prev) => ({ ...prev, [type]: prev[type] + 1 }));
@@ -71,7 +115,7 @@ export default function BookingCalculator({
 
   return (
     <div className="max-w-sm mx-auto space-y-4">
-      {/* Number of people dropdown */}
+      {/* People Dropdown */}
       <div className="relative" ref={dropdownRef}>
         <label className="font-medium text-gray-700 mb-1 block">
           N° of people:

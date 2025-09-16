@@ -24,7 +24,6 @@ const CategoryProvider = ({ children }) => {
         [categorys, categorysLoading]
     );
 
-    console.log('categorys',categorys)
     return (
         <CategoryContext.Provider value={CategoryContextValue}>
             {children}

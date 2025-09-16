@@ -72,14 +72,14 @@ export default function EditCategoryModal({ open, onClose, category, onSuccess }
 
             {/* Title */}
             <h2 className="text-2xl font-bold mb-4 text-text-title">
-              Edit Category
+              Edit Person Name
             </h2>
 
             {/* Form */}
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-text-body mb-1">
-                  Category Name
+                  Person Name
                 </label>
                 <input
                   type="text"

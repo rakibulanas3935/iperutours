@@ -35,7 +35,7 @@ export default function PaymentForm({ formToken }) {
 
 					window.KR.mount("#myPaymentForm");
 
-					window.KR.onFormReady(() => {
+					window.KR.onFormReady(async() => {
 						console.log("IZIPAY form ready");
 
 						// 🔒 Hide the two dropdowns

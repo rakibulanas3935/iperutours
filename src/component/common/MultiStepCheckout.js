@@ -186,7 +186,7 @@ export default function CheckoutMultiPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col py-10">
-      <div className="flex flex-col lg:flex-row max-w-6xl mx-auto gap-6 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 max-w-7xl mx-auto gap-6 px-4">
         {/* Left side: Contact form */}
         {
           user ? null : <form
@@ -325,7 +325,7 @@ export default function CheckoutMultiPage() {
 
 
         {/* Right side: Reservation + Payment */}
-        <div className={`${user ? "w-full" : "w-auto"} space-y-6`}>
+        <div className={`${user ? "w-full" : "w-auto"} col-span-2 space-y-6`}>
           {cartItem.length === 0 && (
             <p className="text-center text-gray-500">Your cart is empty.</p>
           )}
@@ -386,15 +386,7 @@ export default function CheckoutMultiPage() {
                   <span className="text-sm text-gray-700">Pay full amount now (US${basePrice})</span>
                 </label>
 
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="paymentOption"
-                    value="later"
-                    onChange={() => setPaymentOption("later")}
-                  />
-                  <span className="text-sm text-gray-700">Pay later (Reserve without payment)</span>
-                </label>
+                
               </div>
 
               {/* Card Fields - hide if Pay Later */}
@@ -455,12 +447,13 @@ export default function CheckoutMultiPage() {
             </div>
           )}
 
-
-          {open && formToken && (
+        
+          {/* {open && formToken && (
             <PaymentModal formToken={formToken} onClose={() => setOpen(false)} />
-          )}
-
+          )} */}
+         
         </div>
+         <PaymentForm formToken={formToken}/>
       </div>
     </div>
   );

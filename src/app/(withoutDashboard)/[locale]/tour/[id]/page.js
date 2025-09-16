@@ -28,11 +28,14 @@ export default function SacredValleyTrip() {
     // const minDate = tourDetails?.data?.advanceTime ? new Date(tourDetails?.data?.advanceTime) : today;
     const [selectedDate, setSelectedDate] = useState(today);
     const [selectedSlot, setSelectedSlot] = useState("");
+
     const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
     const { reloadCart } = useCartContext()
-    const [counts, setCounts] = useState({ adult: 1, child: 0, infant: 0 });
-    const [people, setPeople] = useState(1);
-    const [total, setTotal] = useState(0)
+    const [people, setPeople] = useState(0);
+    const [counts, setCounts] = useState({ adult: 0, child: 0, infant: 0 });
+    const [total, setTotal] = useState(0);
+    const [selectedServices, setSelectedServices] = useState([]);
+    const [basePrice, setBasePrice] = useState(0);
     useEffect(() => {
         getTourDetails(`http://localhost:3000/api/v1/tours/${id}`, (res) => {
             // const availableTimeSlot = res?.data?.timeSlots?.filter(slot => {
@@ -52,6 +55,8 @@ export default function SacredValleyTrip() {
 
     const handleBooking = () => {
         const bookingData = {
+            selectedServices: selectedServices,
+            basePrice:basePrice,
             selectedDate: selectedDate,
             tour: tourDetails?.data,
             numberOfPeople: people,
@@ -69,37 +74,57 @@ export default function SacredValleyTrip() {
     };
 
 
-    console.log(tourDetails)
 
-    const advanceTimeDate = new Date(tourDetails?.data?.advanceTime);
+    // Calculate actual advance time as a future Date
+    const advanceTimeObj = tourDetails?.data?.advanceTime || { hours: 0, days: 0, months: 0 };
+    console.log("advnaceDate", advanceTimeObj)
+
+    const advanceTimeDate = new Date();
+    advanceTimeDate.setMonth(advanceTimeDate.getMonth() + (advanceTimeObj?.months || 0));
+    advanceTimeDate.setDate(advanceTimeDate.getDate() + (advanceTimeObj?.days || 0));
+    advanceTimeDate.setHours(advanceTimeDate.getHours() + (advanceTimeObj?.hours || 0));
 
     const handleDateSelect = (date) => {
         setSelectedDate(date);
 
-        // If the selected date is before advanceTime's date (midnight), show nothing
-        if (date.setHours(0, 0, 0, 0) < advanceTimeDate.setHours(0, 0, 0, 0)) {
+        // Create midnight versions to compare only by date
+        const selectedMidnight = new Date(date);
+        selectedMidnight.setHours(0, 0, 0, 0);
+
+        const advanceMidnight = new Date(advanceTimeDate);
+        advanceMidnight.setHours(0, 0, 0, 0);
+
+        console.log(selectedMidnight)
+        console.log(advanceMidnight, 'advance')
+        // If selected date is before the advance time date, show nothing
+        if (selectedMidnight < advanceMidnight) {
             setAvailableTimeSlots([]);
             setSelectedSlot("No slots available");
             return;
         }
-        // Show only slots after advanceTime
-        const filteredSlots = tourDetails?.data?.timeSlots?.filter(slot => {
-            const slotDate = new Date(date);
-            slotDate.setHours(slot.startHour, slot.startMinute, 0, 0);
-            return slotDate >= advanceTimeDate;
-        }) || [];
+
+        // Filter slots that are after the advance time
+        const filteredSlots =
+            tourDetails?.data?.timeSlots?.filter((slot) => {
+                const slotDate = new Date(date);
+                slotDate.setHours(slot.startHour, slot.startMinute, 0, 0);
+                return slotDate >= advanceTimeDate;
+            }) || [];
+
         setAvailableTimeSlots(filteredSlots);
 
         if (filteredSlots.length === 1) {
             const slot = filteredSlots[0];
             setSelectedSlot(
-                `${String(slot.startHour).padStart(2, '0')}:${String(slot.startMinute).padStart(2, '0')} - ${String(slot.endHour).padStart(2, '0')}:${String(slot.endMinute).padStart(2, '0')}`
+                `${String(slot.startHour).padStart(2, "0")}:${String(slot.startMinute).padStart(2, "0")} - ${String(
+                    slot.endHour
+                ).padStart(2, "0")}:${String(slot.endMinute).padStart(2, "0")}`
             );
         } else {
             setSelectedSlot("");
         }
-
     };
+
 
 
     return (
@@ -347,15 +372,31 @@ export default function SacredValleyTrip() {
 
                     {/* People */}
 
-                    <BookingCalculator data={tourDetails?.data} total={total} setPeople={setPeople} people={people} setCounts={setCounts} counts={counts} setTotal={setTotal} />
+                    <BookingCalculator
+                        data={tourDetails?.data}
+                        people={people}
+                        setPeople={setPeople}
+                        counts={counts}
+                        setCounts={setCounts}
+                        total={total}
+                        setTotal={setTotal}
+                        setSelectedServices={setSelectedServices}
+                        setBasePrice={setBasePrice}
+                        basePrice={basePrice}
+                    />
                     {/* <BookingBox/> */}
                     {/* Book Button */}
 
-                    <button className="mt-6 cursor-pointer w-full bg-brand-primary text-white font-semibold py-3 rounded-xl shadow-lg hover:bg-brand-secondary transition-all"
+                    <button
+                        className="mt-6 w-full font-semibold py-3 rounded-xl shadow-lg 
+             bg-brand-primary text-white hover:bg-brand-secondary 
+             transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        disabled={people === 0 || total === 0 || !selectedSlot || selectedSlot === "No slots available"}
                         onClick={handleBooking}
                     >
                         Book Now
                     </button>
+
 
                 </motion.div>
             </div>

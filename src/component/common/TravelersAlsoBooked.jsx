@@ -1,73 +1,30 @@
 "use client";
+import useAxiosGet from "@/utils/useAxiosGet";
 import { motion } from "framer-motion";
 import { Clock, MapPin } from "lucide-react";
-
-const travelersAlsoBooked = [
-  {
-    id: 1,
-    title: "City Tour Lima, Colonial and Modern",
-    location: "Lima,Peru",
-    rating: 5.0,
-    reviews: 1,
-    recent: "1 recent booking",
-    duration: "4 Hours",
-    price: "US$34.00",
-    badge: "Ticket",
-    bestseller: true,
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 2,
-    title: "Amazon Jungle in 2 days: Adventure and Expedition",
-    location: "Iquitos,Peru",
-    rating: 5.0,
-    reviews: 1,
-    duration: "2 Days 1 Night",
-    price: "US$175.00",
-    badge: "Eco Lodge",
-    bestseller: false,
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 3,
-    title: "The Mysterious Route",
-    location: "Cusco,Peru",
-    rating: 5.0,
-    reviews: 1,
-    duration: "7 Hours",
-    price: "US$12.00",
-    bestseller: false,
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 4,
-    title: "ATV Quak Bike to Salt Mines of Maras - Moray",
-    location: "Cusco,Peru",
-    rating: 5.0,
-    reviews: 1,
-    recent: "1 recent booking",
-    duration: "6 Hours",
-    price: "US$30.00",
-    badge: "Adventure",
-    bestseller: true,
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80",
-  },
-];
+import { useEffect } from "react";
+import CommonLoader from "./CommonLoader";
 
 export default function TravelersAlsoBooked() {
+  const [recomendedTours,getRecomendedTours,recomendedToursLoading]=useAxiosGet([])
+  useEffect(()=>{
+    getRecomendedTours(`http://localhost:3000/api/v1/tours/randomtours`)
+  },[])
+  console.log("rec",recomendedTours)
+if(recomendedToursLoading) return <CommonLoader/>
   return (
     <section className="bg-white  py-12 px-4 sm:px-8 lg:px-16">
       {/* Heading */}
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-[#0b61b3]">
-          Some travelers also booked
+          Recommed Tours
         </h2>
         <div className="w-28 h-[2px] bg-[#e94f1d] mx-auto mt-2"></div>
       </div>
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {travelersAlsoBooked.map((activity, i) => (
+        {recomendedTours?.map((activity, i) => (
           <motion.div
             key={activity.id}
             initial={{ opacity: 0, y: 50 }}

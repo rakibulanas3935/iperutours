@@ -38,8 +38,8 @@ const DashboardSidebar = () => {
         { name: "Dashboard", value: "dashboard", route: "/dashboard", icon: Home, isAdmin: true },
         { name: "Country", value: "country", route: "/dashboard/country", icon: Users, isAdmin: true },
         { name: "Destination", value: "destination", route: "/dashboard/destination", icon: Users, isAdmin: true },
-        { name: "Tour Type", value: "tourType", route: "/dashboard/tourType", icon: Users, isAdmin: true },
-        { name: "Add Tours", value: "add-tours", route: "/dashboard/add-tours", icon: Users, isAdmin: true },
+        { name: "Person Type", value: "tourType", route: "/dashboard/personType", icon: Users, isAdmin: true },
+        { name: "Tours", value: "add-tours", route: "/dashboard/add-tours", icon: Users, isAdmin: true },
         { name: "Booking", value: "order", route: "/dashboard/order", icon: Users, isAdmin: false },
         { name: "Payment", value: "payment", route: "/dashboard/payment", icon: Users, isAdmin: true },
     ];

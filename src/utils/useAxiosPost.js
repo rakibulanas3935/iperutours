@@ -38,6 +38,7 @@ const useAxiosPost = (initialValue, method) => {
         }
       })
       .catch((err) => {
+        console.log(err)
         setRes(initialValue || []);
         setError(err);
         setLoading(false);

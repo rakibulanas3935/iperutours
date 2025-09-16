@@ -41,9 +41,7 @@ const CartPage = () => {
             <Trash2
               className="text-red-500 cursor-pointer"
               size={24}
-              onClick={() =>
-                handleDelete(item.tour._id, item.selectedDate)
-              }
+              onClick={() => handleDelete(item.tour._id, item.selectedDate)}
             />
           </div>
 
@@ -77,17 +75,32 @@ const CartPage = () => {
               <span className="font-semibold">Number of People:</span>{" "}
               {item.numberOfPeople}
             </p>
+
+            {/* Selected Services */}
+            {item.selectedServices?.length > 0 && (
+              <div className="mt-2">
+                <span className="font-semibold">Services:</span>
+                <ul className="list-disc ml-5">
+                  {item.selectedServices.map((service, i) => (
+                    <li key={i}>
+                      {service.name} (+US${service.price})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* Price */}
           <div className="col-span-3 flex justify-start items-start font-medium">
-            <span>US${item.totalPrice}</span>
+            <span>Total US${item.totalPrice}</span>
           </div>
         </div>
       ))}
 
+
       {/* Footer */}
-      {cartItem.length > 0 && (
+      {/* {cartItem.length > 0 && (
         <div className="flex justify-end mt-4">
           <button
             type="button"
@@ -96,7 +109,7 @@ const CartPage = () => {
             Proceed to Checkout
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

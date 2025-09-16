@@ -45,7 +45,6 @@ export default function PaymentModal({ formToken, onClose }) {
 
                         if (response.ok) {
                             toast.success("Payment successful!");
-                            onClose()
                             // KR.close();
                         } else {
                             const err = await response.text();
@@ -71,10 +70,17 @@ export default function PaymentModal({ formToken, onClose }) {
             <Head>
                 <title>NextJS</title>
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-                <link rel="stylesheet" href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon-reset.min.css" defer></link>
+                <link
+                    rel="stylesheet"
+                    href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon-reset.min.css"
+                />
+                <link
+                    rel="stylesheet"
+                    href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/kr-embedded.min.css"
+                />
             </Head>
-            <Script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js" defer />
-            <Script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon.js" defer />
+            <Script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js" />
+            <Script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/ext/neon.js" />
             {open && (
                 <motion.div
                     className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center px-4"

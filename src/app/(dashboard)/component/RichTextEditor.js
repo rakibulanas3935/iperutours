@@ -1,132 +1,48 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Strike from '@tiptap/extension-strike';
-import CodeBlock from '@tiptap/extension-code-block';
-import Blockquote from '@tiptap/extension-blockquote';
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import React from "react";
+import MenuBar from "./menu-bar";
+import TextAlign from "@tiptap/extension-text-align";
+import Highlight from "@tiptap/extension-highlight";
 
-export default function RichTextEditor({ value, onChange }) {
+export default function RichTextEditor({ content, onChange }) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Underline,
-      Strike,
-      CodeBlock,
-      Blockquote,
+      StarterKit.configure({
+        bulletList: {
+          HTMLAttributes: {
+            class: "list-disc ml-3",
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: "list-decimal ml-3",
+          },
+        },
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      Highlight,
     ],
-    content: value || '',
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      if (html !== value) {
-        onChange(html);
-      }
-    },
+    content: content,
     editorProps: {
       attributes: {
-        class:
-          'prose prose-invert focus:outline-none min-h-[150px] p-4 text-text-title',
+        class: "min-h-[156px] border rounded-md bg-slate-50 py-2 px-3",
       },
     },
-    autofocus: false,
-    injectCSS: false,
-    editable: true,
-    immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    immediatelyRender: true, 
   });
 
-  // Sync prop -> editor if value changes outside
-  useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '', false);
-    }
-  }, [value, editor]);
-
-  if (!editor) return null;
-
-  const ToolbarButton = ({ command, icon, isActive }) => (
-    <button
-      onClick={command}
-      className={`px-2 py-1 text-sm rounded transition ${
-        isActive
-          ? ' bg-primary text-black'
-          : 'hover:bg-white/10 text-text-title'
-      }`}
-      type="button"
-    >
-      {icon}
-    </button>
-  );
-
   return (
-    <div className="backdrop-blur-md  border border-neutral-line 
-                                        text-text-body bg-white
-                                        placeholder:text-gray-400 rounded-xl shadow-xl">
-      {/* Toolbar */}
-      <div className="flex flex-wrap gap-2 border-b text-black border-white/10 p-3 rounded-t-xl bg-primary">
-        <ToolbarButton
-          icon="B"
-          isActive={editor.isActive('bold')}
-          command={() => editor.chain().focus().toggleBold().run()}
-        />
-        <ToolbarButton
-          icon="I"
-          isActive={editor.isActive('italic')}
-          command={() => editor.chain().focus().toggleItalic().run()}
-        />
-        <ToolbarButton
-          icon="U"
-          isActive={editor.isActive('underline')}
-          command={() => editor.chain().focus().toggleUnderline().run()}
-        />
-        <ToolbarButton
-          icon="S"
-          isActive={editor.isActive('strike')}
-          command={() => editor.chain().focus().toggleStrike().run()}
-        />
-        <ToolbarButton
-          icon="H1"
-          isActive={editor.isActive('heading', { level: 1 })}
-          command={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        />
-        <ToolbarButton
-          icon="H2"
-          isActive={editor.isActive('heading', { level: 2 })}
-          command={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        />
-        <ToolbarButton
-          icon="•"
-          isActive={editor.isActive('bulletList')}
-          command={() => editor.chain().focus().toggleBulletList().run()}
-        />
-        <ToolbarButton
-          icon="1."
-          isActive={editor.isActive('orderedList')}
-          command={() => editor.chain().focus().toggleOrderedList().run()}
-        />
-        <ToolbarButton
-          icon="“”"
-          isActive={editor.isActive('blockquote')}
-          command={() => editor.chain().focus().toggleBlockquote().run()}
-        />
-        <ToolbarButton
-          icon="{}"
-          isActive={editor.isActive('codeBlock')}
-          command={() => editor.chain().focus().toggleCodeBlock().run()}
-        />
-        <ToolbarButton
-          icon="↩"
-          command={() => editor.chain().focus().undo().run()}
-        />
-        <ToolbarButton
-          icon="↪"
-          command={() => editor.chain().focus().redo().run()}
-        />
-      </div>
-
-      {/* Editor */}
-      <EditorContent editor={editor} className="px-4 py-4 text-text-body" />
+    <div>
+      <MenuBar editor={editor} />
+      <EditorContent editor={editor} />
     </div>
   );
 }

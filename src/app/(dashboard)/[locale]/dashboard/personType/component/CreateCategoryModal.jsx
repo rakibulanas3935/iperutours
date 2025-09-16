@@ -66,14 +66,14 @@ export default function CreateCategoryModal({ open, onClose, onSuccess }) {
 
 						{/* Title */}
 						<h2 className="text-2xl font-bold mb-4 text-text-title">
-							Add New Category
+							Add New Person Type
 						</h2>
 
 						{/* Form */}
 						<form onSubmit={handleSave} className="space-y-4">
 							<div>
 								<label className="block text-sm font-medium text-text-body mb-1">
-									Category Name
+									Person Name
 								</label>
 								<input
 									type="text"
