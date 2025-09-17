@@ -75,9 +75,24 @@ export default function SacredValleyTrip() {
 
 
 
-    // Calculate actual advance time as a future Date
     const advanceTimeObj = tourDetails?.data?.advanceTime || { hours: 0, days: 0, months: 0 };
-    console.log("advnaceDate", advanceTimeObj)
+
+const now = new Date();
+
+// Create a new date based on now
+const futureDate = new Date(now);
+
+// Add months
+futureDate.setMonth(futureDate.getMonth() + (advanceTimeObj.months || 0));
+
+// Add days
+futureDate.setDate(futureDate.getDate() + (advanceTimeObj.days || 0));
+
+// Add hours
+futureDate.setHours(futureDate.getHours() + (advanceTimeObj.hours || 0));
+
+console.log(tourDetails);
+
 
     const advanceTimeDate = new Date();
     advanceTimeDate.setMonth(advanceTimeDate.getMonth() + (advanceTimeObj?.months || 0));
@@ -144,7 +159,7 @@ export default function SacredValleyTrip() {
                     </div>
                     <div className="flex items-center gap-3 mt-2 text-sm">
                         <span className="text-green-600 font-semibold">
-                            {tourDetails?.availability || 'Daily availability'}
+                             {tourDetails?.data?.tourType}
                         </span>
                         {(() => {
                             const reviews = tourDetails?.data?.reviews;
@@ -177,6 +192,9 @@ export default function SacredValleyTrip() {
                         <span className="text-gray-500">
                             ({tourDetails?.data?.reviews.length || 0} reviews)
                         </span>
+                        <span className="text-gray-500">
+                           
+                        </span>
                     </div>
                     {/* <div className="mt-4 text-gray-500 text-sm">
                             Home / <span className="text-orange-500">Peru</span> /{' '}
@@ -185,7 +203,7 @@ export default function SacredValleyTrip() {
 
                 </div>
                 <motion.div
-                    className="relative w-full h-[450px] rounded-2xl overflow-hidden shadow-lg"
+                    className="relative w-full h-[420px] rounded-2xl overflow-hidden shadow-lg"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
@@ -300,7 +318,7 @@ export default function SacredValleyTrip() {
                                 selected={selectedDate}
                                 onSelect={handleDateSelect}
                                 month={today}
-                                disabled={{ before: today }}
+                                disabled={{ before: futureDate }}
                                 styles={{
                                     caption: { color: '#111827', fontWeight: 600, fontSize: '1.1rem' },
                                     head: { color: '#6B7280', fontWeight: 500 },
@@ -362,11 +380,14 @@ export default function SacredValleyTrip() {
                     <div className="mt-4 mb-4">
                         <label className="font-medium text-gray-700">Duration</label>
                         <div className="w-full border rounded-lg p-2 bg-gray-50 text-gray-700 text-sm">
-                            {tourDetails?.data?.timeSlots?.length > 0
+                            {/* {tourDetails?.data?.timeSlots?.length > 0
                                 ? `${tourDetails.data.timeSlots[0].endHour - tourDetails.data.timeSlots[0].startHour} hours`
                                 : Number(tourDetails?.data?.details?.duration) < 24
                                     ? `${tourDetails?.data?.details?.duration} hours`
-                                    : `${Math.floor(Number(tourDetails?.data?.details?.duration) / 24)} days`}
+                                    : `${Math.floor(Number(tourDetails?.data?.details?.duration) / 24)} days`} */}
+                                    {Number(tourDetails?.data?.details?.duration) < 24
+								? `${tourDetails?.data?.details?.duration} hours`
+								: `${Math.floor(Number(tourDetails?.data?.details?.duration) / 24)} days`}
                         </div>
                     </div>
 

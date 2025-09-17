@@ -189,7 +189,8 @@ export default function CheckoutMultiPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 max-w-7xl mx-auto gap-6 px-4">
         {/* Left side: Contact form */}
         {
-          user ? null : <form
+          user ? null : 
+          <form
             className="flex-1 bg-white border border-gray-200 rounded-xl p-6 shadow-md"
             onSubmit={handleRegister}
           >

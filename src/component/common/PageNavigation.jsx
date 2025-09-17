@@ -5,7 +5,7 @@ import React from "react";
 
 const PageNavigation = ({destination,country,title}) => {
   return (
-    <div className="text-[15px] flex items-center gap-1 py-3 mb-3 font-medium">
+    <div className="text-[15px] flex items-center gap-1 py-3  font-medium">
       <Link href="/" className="text-brand-primary hover:underline">
         Home
       </Link>

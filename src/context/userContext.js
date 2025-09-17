@@ -48,7 +48,7 @@ const UserProvider = ({ children }) => {
   }, [fetchCurrentUser]);
 
   useEffect(() => {
-    getAllusers(`https://nova-next-gen-server.onrender.com/api/v1/users`)
+    getAllusers(`http://localhost:3000/api/v1/users`)
   }, [reload])
   const userContextValue = useMemo(
     () => ({ user, users,setUser, loading, setReload,userLoading }),

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Clock, MapPin, Languages, Dumbbell } from "lucide-react";
+import { Clock, MapPin, Languages, Dumbbell, X } from "lucide-react";
 import DescriptionSection from "./DescriptionSection";
 
 export default function TripInfo({ data }) {
@@ -126,9 +126,12 @@ export default function TripInfo({ data }) {
 						<h3 className="text-lg font-semibold text-red-600 mb-2">
 							Excluded
 						</h3>
-						<ul className="space-y-1 text-sm">
+						<ul className="flex space-x-3 text-sm">
 							{data?.excluded?.map((item, index) => (
-								<li key={index + 1}>✅ {item}</li>
+								<li key={index + 1} className="flex items-center gap-1">
+									<X className="text-red-600" />
+									<span>{item}</span>
+								</li>
 							))}
 						</ul>
 					</div>
@@ -136,7 +139,7 @@ export default function TripInfo({ data }) {
 			</section>
 
 			<section id="description" className="mb-12 scroll-mt-28">
-				<DescriptionSection data={data}/>
+				<DescriptionSection data={data} />
 			</section>
 
 			<section id="what-to-bring" className="mb-12 scroll-mt-28">
@@ -151,8 +154,10 @@ export default function TripInfo({ data }) {
 			<section id="cancellation" className="mb-12 scroll-mt-28">
 				<h2 className="text-xl font-bold text-gray-800 mb-3">Cancellation</h2>
 				<p className="text-sm text-gray-700">
-					Free cancellation up to 24 hours in advance. No refunds after that
-					time.
+					<div
+						className="text-sm text-text-body"
+						dangerouslySetInnerHTML={{ __html: data?.cancelation }}
+					/>
 				</p>
 			</section>
 

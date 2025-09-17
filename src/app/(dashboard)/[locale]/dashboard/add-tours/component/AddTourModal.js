@@ -920,7 +920,7 @@ export default function AddTourModal({ open, onClose, onSuccess }) {
 								) : (
 									<Upload size={18} />
 								)}
-								{uploading ? "Uploading..." : "Update Tour"}
+								{uploading ? "Uploading..." : "Add Tour"}
 							</button>
 						</form>
 					</motion.div>

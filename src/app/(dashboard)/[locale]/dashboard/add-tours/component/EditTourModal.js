@@ -247,7 +247,7 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
         }
     };
 
-
+    console.log("perPersonPrice", perPersonPrices)
     // Dropdown component
     const Dropdown = ({ label, items, selected, setSelected, open, setOpen }) => (
         <div className="relative">
@@ -663,177 +663,39 @@ export default function EditTourModal({ open, onClose, onSuccess, tour }) {
                             </div>
 
 
-                            {/* Pricing */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Pricing Type
-                                </label>
-                                <div className="flex gap-4">
-                                    <label className="flex text-black items-center gap-2">
-                                        <input
-                                            type="radio"
-                                            name="pricingType"
-                                            value="perPerson"
-                                            checked={pricingType === "perPerson"}
-                                            onChange={() => setPricingType("perPerson")}
-                                        />
-                                        Per Person
-                                    </label>
-                                    <label className="flex text-black items-center gap-2">
-                                        <input
-                                            type="radio"
-                                            name="pricingType"
-                                            value="groupTier"
-                                            checked={pricingType === "groupTier"}
-                                            onChange={() => setPricingType("groupTier")}
-                                        />
-                                        Group Tier
-                                    </label>
-                                </div>
-
-                                {/* ✅ Common Base Price - Always Shown */}
-                                <div className="mt-3">
+                            {pricingType === "perPerson" && perPersonPrices && (
+                                <div className="mt-3 space-y-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Base Price
+                                        Per Person Prices
                                     </label>
-                                    <input
-                                        type="number"
-                                        value={basePrice}
-                                        onChange={(e) => setBasePrice(e.target.value)}
-                                        placeholder="Enter base price"
-                                        className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                            border border-neutral-line 
-                            text-text-body bg-white
-                            placeholder:text-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                            transition duration-200"
-                                    />
-                                </div>
 
-                                {/* ✅ Conditional Pricing */}
-                                {pricingType === "perPerson" && (
-                                    <div className="mt-3 space-y-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Per Person Prices
-                                        </label>
-
-                                        {/* Adult */}
-                                        <input
-                                            type="number"
-                                            value={perPersonPrices?.adult}
-                                            onChange={(e) =>
-                                                setPerPersonPrices({
-                                                    ...perPersonPrices,
-                                                    adult: e.target.value,
-                                                })
-                                            }
-                                            placeholder="Adult price"
-                                            className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                            border border-neutral-line 
-                            text-text-body bg-white
-                            placeholder:text-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                            transition duration-200"
-                                        />
-
-                                        {/* Child */}
-                                        <input
-                                            type="number"
-                                            value={perPersonPrices?.child}
-                                            onChange={(e) =>
-                                                setPerPersonPrices({
-                                                    ...perPersonPrices,
-                                                    child: e.target.value,
-                                                })
-                                            }
-                                            placeholder="Child price"
-                                            className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                            border border-neutral-line 
-                            text-text-body bg-white
-                            placeholder:text-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                            transition duration-200"
-                                        />
-
-                                        {/* Infant */}
-                                        <input
-                                            type="number"
-                                            value={perPersonPrices?.infant}
-                                            onChange={(e) =>
-                                                setPerPersonPrices({
-                                                    ...perPersonPrices,
-                                                    infant: e.target.value,
-                                                })
-                                            }
-                                            placeholder="Infant price"
-                                            className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                            border border-neutral-line 
-                            text-text-body bg-white
-                            placeholder:text-gray-400
-                            focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                            transition duration-200"
-                                        />
-                                    </div>
-                                )}
-
-                                {pricingType === "groupTier" && (
-                                    <div className="mt-3 space-y-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Group Tier Prices
-                                        </label>
-                                        {groupPrices.map((gp, idx) => (
-                                            <div key={idx} className="flex gap-2">
+                                    {Object.entries(perPersonPrices)
+                                        .filter(([key, value]) => value !== undefined && value !== null && value !== "")
+                                        .map(([key, value]) => (
+                                            <div key={key} className="flex items-center gap-2">
                                                 <input
                                                     type="number"
-                                                    value={gp.persons}
+                                                    value={value}
                                                     onChange={(e) =>
-                                                        handleGroupPriceChange(
-                                                            idx,
-                                                            "persons",
-                                                            e.target.value
-                                                        )
+                                                        setPerPersonPrices((prev) => ({
+                                                            ...prev,
+                                                            [key]: e.target.value,
+                                                        }))
                                                     }
-                                                    placeholder="Persons"
+                                                    placeholder="Enter price"
                                                     className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                                  border border-neutral-line 
-                                  text-text-body bg-white
-                                  placeholder:text-gray-400
-                                  focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                  transition duration-200"
+              border border-neutral-line 
+              text-text-body bg-white
+              placeholder:text-gray-400
+              focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+              transition duration-200"
                                                 />
-                                                <input
-                                                    type="number"
-                                                    value={gp.price}
-                                                    onChange={(e) =>
-                                                        handleGroupPriceChange(idx, "price", e.target.value)
-                                                    }
-                                                    placeholder="Price"
-                                                    className="flex-1 px-3 py-2 w-full rounded-lg shadow-sm 
-                                  border border-neutral-line 
-                                  text-text-body bg-white
-                                  placeholder:text-gray-400
-                                  focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
-                                  transition duration-200"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeGroupPriceRow(idx)}
-                                                    className="bg-brand-secondary text-white px-2 rounded-lg hover:bg-red-600"
-                                                >
-                                                    ×
-                                                </button>
+                                                <span className="text-gray-700 capitalize">{key}</span>
                                             </div>
                                         ))}
-                                        <button
-                                            type="button"
-                                            onClick={addGroupPriceRow}
-                                            className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 mt-1"
-                                        >
-                                            Add Row
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
+
 
                             <div className="mt-5">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
