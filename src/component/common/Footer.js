@@ -12,8 +12,10 @@ import {
 } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 import { FaTripadvisor } from "react-icons/fa";
+import { useSettingContext } from "@/context/settingContext";
 
 export default function Footer() {
+    const {settings}=useSettingContext()
   return (
     <footer className="bg-neutral-background">
       {/* Main Footer Content */}
@@ -24,54 +26,65 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h3 className="font-bold text-lg mb-4">Turismo iPeru</h3>
+          <h3 className="font-bold text-lg mb-4">{settings?.data?.siteName}</h3>
           <div className="flex items-center gap-2 mb-3">
             <Image
-              src="/image.png" // replace with your logo
+              src={settings?.data?.logoUrl || "/image.png"} // replace with your logo
               alt="Turismo iPeru"
               width={50}
               height={80}
             />
             <p className="text-sm font-semibold">Explore Peru With Us</p>
           </div>
-          <p className="flex items-start gap-2 text-sm mb-2">
-            🏠 CUSCO: C. Comercial Ruiseñores, 2nd floor, Of. s/n (Main Square)
-          </p>
-          <p className="flex items-start gap-2 text-sm mb-2">
-            🏠 LIMA: Gonzales Vigil St. #116, Los Olivos
-          </p>
-          <p className="flex items-start gap-2 text-sm">
-            🏠 AREQUIPA: Santa Marta St. #101
-          </p>
+          {settings?.data?.addresses?.map((addr, i) => (
+            <p key={i} className="flex items-start gap-2 text-sm mb-2">
+              🏠 {addr.city?.toUpperCase() || "Location"}: {addr.line1}, {addr.line2 || ""} {addr.postalCode || ""}
+            </p>
+          ))}
         </motion.div>
 
-        {/* Column 2: Contact */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h3 className="font-bold text-lg mb-4">Contact</h3>
-          <p className="text-sm font-semibold mb-2">
-            Trade name: Turismo iPeru E.I.R.L. <br />
-            RUC: <span className="font-bold">20609503638</span>
-          </p>
-          <p className="flex items-center gap-2 text-sm mb-2">
-            <FaWhatsapp className="text-green-500" /> (+51) 972 386 856
-          </p>
-          <p className="flex items-center gap-2 text-sm mb-2">
-            <FaWhatsapp className="text-green-500" /> (+51) 966 389 141
-          </p>
-          <p className="flex items-center gap-2 text-sm mb-2">
-            <FaEnvelope /> info@iperutours.com
-          </p>
-          <p className="flex items-center gap-2 text-sm mb-2">
-            <FaEnvelope /> reserva@iperutours.com
-          </p>
-          <p className="flex items-center gap-2 text-sm">
-            <FaEnvelope /> booking@iperutours.com
-          </p>
-        </motion.div>
+      {/* Column 2: Contact */}
+<motion.div
+  initial={{ opacity: 0, y: 30 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+>
+  <h3 className="font-bold text-lg mb-4">Contact</h3>
+
+  {/* Contract info */}
+  {settings?.data?.contract && (
+    <p className="text-sm font-semibold mb-2">
+      Trade name: {settings.data.contract.tname || "N/A"} <br />
+      {/* You can add RUC if available in settings */}
+    </p>
+  )}
+
+  {/* Phones */}
+  {settings?.data?.contract?.phones?.map((phone, i) => (
+    <p key={i} className="flex items-center gap-2 text-sm mb-2">
+      <FaWhatsapp className="text-green-500" /> {phone}
+    </p>
+  ))}
+
+  {settings?.data?.phones?.map((phone, i) => (
+    <p key={`global-${i}`} className="flex items-center gap-2 text-sm mb-2">
+      <FaWhatsapp className="text-green-500" /> {phone}
+    </p>
+  ))}
+
+  {/* Emails */}
+  {settings?.data?.contract?.emails?.map((email, i) => (
+    <p key={i} className="flex items-center gap-2 text-sm mb-2">
+      <FaEnvelope /> {email}
+    </p>
+  ))}
+
+  {settings?.data?.emails?.map((email, i) => (
+    <p key={`global-email-${i}`} className="flex items-center gap-2 text-sm mb-2">
+      <FaEnvelope /> {email}
+    </p>
+  ))}
+</motion.div>
 
         {/* Column 3: Support */}
         <motion.div
@@ -82,24 +95,24 @@ export default function Footer() {
           <h3 className="font-bold text-lg mb-4">Support</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link href="#">About us</Link>
+              <Link href="/about-us">About us</Link>
             </li>
             <li>
-              <Link href="#">Terms and Conditions</Link>
+              <Link href="/terms-conditions">Terms and Conditions</Link>
             </li>
             <li>
-              <Link href="#">Privacy policy</Link>
+              <Link href="/privacy-policy">Privacy policy</Link>
             </li>
             <li>
-              <Link href="#">Refund policy</Link>
+              <Link href="/refund-policy">Refund policy</Link>
             </li>
           </ul>
           <h3 className="font-bold text-lg mt-6 mb-3">Accepted payments</h3>
           <div className="flex gap-3">
-            <Image src="/visa.png" alt="Visa" width={50} height={30} />
-            <Image src="/mastercard.png" alt="MasterCard" width={50} height={30} />
-            <Image src="/diners.png" alt="Diners Club" width={50} height={30} />
-            <Image src="/amex.png" alt="AmEx" width={50} height={30} />
+            <Image src="/visa-1.svg" alt="Visa" width={50} height={30} />
+            <Image src="/mc.svg" alt="MasterCard" width={50} height={30} />
+            <Image src="/diners.svg" alt="Diners Club" width={50} height={30} />
+            <Image src="/amex.svg" alt="AmEx" width={50} height={30} />
           </div>
         </motion.div>
 

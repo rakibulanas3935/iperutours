@@ -1,23 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { Eye, Plus, Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Eye, Plus, Search, Star } from "lucide-react";
 
 
 import { useBookingContext } from "@/context/bookingContext";
 import useAxiosPost from "@/utils/useAxiosPost";
 import { toast } from "react-toastify";
 import { useUserContext } from "@/context/userContext";
+import axios from "axios";
 
 export default function OrderPage() {
-  const { setReload, booking } = useBookingContext();
+  const { booking, setbooking,getAllbooking, setReload, bookingLoading } = useBookingContext();
   const { user } = useUserContext()
   const [showView, setShowView] = useState(null);
   const [showReview, setShowReview] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
-
+   const [search, setSearch] = useState("");
   const [, updatebooking] = useAxiosPost({}, "patch");
 
   const handleStatusChange = (id, newStatus) => {
@@ -69,12 +70,37 @@ export default function OrderPage() {
     setLoading(false);
   };
 
-  console.log("user", user)
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        getAllbooking(`http://localhost:3000/api/v1/booking?search=${search}`, (res)=>{
+          setbooking(res)
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const delay = setTimeout(fetchBookings, 300); // debounce
+    return () => clearTimeout(delay);
+  }, [search]);
+
   return (
     <div className="min-h-screen bg-neutral-100 text-gray-800 p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">📦 All Bookings</h1>
+            <div className="hidden md:flex items-center bg-white/10 rounded-full px-4 py-2 border border-neutral-line">
+                                <Search className="text-text-body mr-2" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    className="bg-transparent text-text-body  outline-none w-48"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+
+                                />
+                            </div>
         </div>
 
         {/* Table */}

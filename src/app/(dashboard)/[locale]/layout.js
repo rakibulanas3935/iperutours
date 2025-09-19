@@ -10,6 +10,7 @@ import { TourProvider } from "@/context/tourContext";
 import { CountryProvider } from "@/context/countryContext";
 import { BookingProvider } from "@/context/bookingContext";
 import { PaymentProvider } from "@/context/paymentContext";
+import { SettingProvider } from "@/context/settingContext";
 
 
 
@@ -31,6 +32,7 @@ export const metadata = {
 export default function DashboardLayout({ children }) {
   return (
     <html lang="en">
+      <SettingProvider>
       <UserProvider>
         <CountryProvider>
         <TourProvider>
@@ -59,6 +61,7 @@ export default function DashboardLayout({ children }) {
         </TourProvider>
         </CountryProvider>
       </UserProvider>
+      </SettingProvider>
     </html>
   );
 }

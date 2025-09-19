@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useUserContext } from "@/context/userContext";
 import Image from "next/image";
 import CommonLoader from "@/component/common/CommonLoader";
+import { useSettingContext } from "@/context/settingContext";
 
 const DashboardSidebar = () => {
     const [activeItem, setActiveItem] = useState("dashboard");
@@ -23,7 +24,7 @@ const DashboardSidebar = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const { user, setReload, userLoading } = useUserContext();
     const [initialLoading, setInitialLoading] = useState(true);
-
+    const { settings } = useSettingContext();
     const router = useRouter();
 
     // Simulate initial loading
@@ -43,8 +44,10 @@ const DashboardSidebar = () => {
         { name: "Tours", value: "add-tours", route: "/dashboard/add-tours", icon: Users, isAdmin: true },
         { name: "Booking", value: "order", route: "/dashboard/order", icon: Users, isAdmin: false },
         { name: "Payment", value: "payment", route: "/dashboard/payment", icon: Users, isAdmin: true },
+        { name: "Settings", value: "settings", route: "/dashboard/settings", icon: Users, isAdmin: true },
     ];
 
+    console.log("settings",settings)
     // if (initialLoading) return <CommonLoader />;
     return (
         <>
@@ -65,7 +68,7 @@ const DashboardSidebar = () => {
                     <div className="flex justify-between items-center mb-6">
                         <Link href={"/"} className="flex items-center">
                             <Image
-                                src="/image.png"
+                                src={settings?.data?.logoUrl||'/image.png'}
                                 alt="IpTours"
                                 width={150}
                                 height={40}

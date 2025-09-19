@@ -22,6 +22,8 @@ import { useActiveMenuContext } from "@/context/activeMenuContext";
 import { data } from "autoprefixer";
 import { useUserContext } from "@/context/userContext";
 import CartIcon from "./CartIcon";
+import useAxiosGet from "@/utils/useAxiosGet";
+import { useSettingContext } from "@/context/settingContext";
 
 export default function Header({ locale = "en" }) {
   const [showTop, setShowTop] = useState(true);
@@ -30,6 +32,7 @@ export default function Header({ locale = "en" }) {
   const { user, users } = useUserContext()
   const { newPlace } = useNewPlaceContext()
   const { activeMenu, activeMenuLoading, setactiveMenu, getAllactiveMenu } = useActiveMenuContext()
+  const { settings } = useSettingContext()
   const pathname = usePathname();
   const messages = locale === "pt" ? pt : en;
   const handleClick = () => {
@@ -61,7 +64,7 @@ export default function Header({ locale = "en" }) {
         {/* Logo */}
         <Link href="/" className="flex items-center" onClick={handleClick}>
           <Image
-            src="/image.png"
+            src={settings?.data?.logoUrl || "/image.png"}
             alt="Turismo Logo"
             width={150}
             height={50}
@@ -173,30 +176,33 @@ export default function Header({ locale = "en" }) {
       </div>
 
       {/* Desktop Navigation */}
-      <nav className="hidden md:block py-3 bg-gray-50 font-semibold">
-        <div className="hidden md:flex max-w-7xl mx-auto overflow-x-auto scrollbar-none gap-6">
-          {newPlace?.data?.map((place) => (
-            <button
-              key={place?.placeName}
-              onClick={() => {
-                getAllactiveMenu(
-                  `http://localhost:3000/api/v1/places/${place?._id}`,
-                  (data) => setactiveMenu(data?.data)
-                );
-              }}
-              className={`flex-shrink-0 transition-colors cursor-pointer ${activeMenu?._id === place?._id
+      {
+        newPlace?.data?.length > 0 && <nav className="hidden md:block py-3 bg-gray-50 font-semibold">
+          <div className="hidden md:flex max-w-7xl mx-auto overflow-x-auto scrollbar-none gap-6">
+            {newPlace?.data?.map((place) => (
+              <button
+                key={place?.placeName}
+                onClick={() => {
+                  getAllactiveMenu(
+                    `http://localhost:3000/api/v1/places/${place?._id}`,
+                    (data) => setactiveMenu(data?.data)
+                  );
+                }}
+                className={`flex-shrink-0 transition-colors cursor-pointer ${activeMenu?._id === place?._id
                   ? "text-brand-secondary"
                   : "text-text-title hover:text-brand-secondary"
-                }`}
-            >
-              {place?.placeName}
-            </button>
-          ))}
-        </div>
+                  }`}
+              >
+                {place?.placeName}
+              </button>
+            ))}
+          </div>
 
-  {/* Extra content */}
-  
-</nav>
+          {/* Extra content */}
+
+        </nav>
+      }
+
 
       {/* Mobile Dropdown Menu */}
       <AnimatePresence>
@@ -210,20 +216,20 @@ export default function Header({ locale = "en" }) {
           >
             {newPlace?.data?.map((place) => (
               <button
-              key={place?.placeName}
-              onClick={() => {
-                getAllactiveMenu(
-                  `http://localhost:3000/api/v1/places/${place?._id}`,
-                  (data) => setactiveMenu(data?.data)
-                );
-              }}
-              className={`text-left transition-colors cursor-pointer ${activeMenu?._id === place?._id
+                key={place?.placeName}
+                onClick={() => {
+                  getAllactiveMenu(
+                    `http://localhost:3000/api/v1/places/${place?._id}`,
+                    (data) => setactiveMenu(data?.data)
+                  );
+                }}
+                className={`text-left transition-colors cursor-pointer ${activeMenu?._id === place?._id
                   ? "text-brand-secondary"
                   : "text-text-title hover:text-brand-secondary"
-                }`}
-            >
-              {place?.placeName}
-            </button>
+                  }`}
+              >
+                {place?.placeName}
+              </button>
             ))}
 
             <div className="border-t pt-3 mt-3 flex flex-col gap-3">

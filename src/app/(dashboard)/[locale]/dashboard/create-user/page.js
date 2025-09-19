@@ -30,8 +30,6 @@ export default function CreateUserPage() {
     setShowConfirm(true);
   };
 
-  console.log("users",users)
-
   const confirmAction = () => {
 
     deleteProject(
@@ -105,14 +103,14 @@ export default function CreateUserPage() {
                     </button>
 
                     {/* Edit */}
-                    <button
+                    {/* <button
                       onClick={() => {
                         setEditCategoryModalOpen(user);
                       }}
                       className="inline-flex items-center justify-center bg-accent-yellow hover:bg-brand-primary text-text-title font-semibold rounded-md p-2 transition"
                     >
                       <Pencil size={18} />
-                    </button>
+                    </button> */}
 
                     {/* Delete */}
                     <button

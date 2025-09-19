@@ -20,7 +20,7 @@ const BookingProvider = ({ children }) => {
     }, [reload]);
 
     const BookingContextValue = useMemo(
-        () => ({ booking, setbooking, setReload, bookingLoading}),
+        () => ({ booking, setbooking,getAllbooking, setReload, bookingLoading}),
         [booking, bookingLoading]
     );
 

@@ -16,6 +16,7 @@ import { CartProvider } from '@/context/cartContext';
 import { BookingProvider } from '@/context/bookingContext';
 import { DestinationWiseTourProvider } from '@/context/destinationWiseTourContext';
 import Head from 'next/head';
+import { SettingProvider } from '@/context/settingContext';
 
 
 export const metadata = {
@@ -48,8 +49,10 @@ export default async function LocaleLayout({
         ></script>
       </Head>
       <body>
+         <SettingProvider>
         <ActiveMenuProvider>
           <NextIntlClientProvider>
+           
             <UserProvider>
               <CartProvider>
                 <DestinationWiseTourProvider>
@@ -72,8 +75,10 @@ export default async function LocaleLayout({
                 </DestinationWiseTourProvider>
               </CartProvider>
             </UserProvider>
+       
           </NextIntlClientProvider>
         </ActiveMenuProvider>
+        </SettingProvider>
       </body>
     </html>
   );
